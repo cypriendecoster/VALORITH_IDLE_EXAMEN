@@ -29,9 +29,9 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-[var(--color-border)] bg-black/35 px-6 py-4 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-2 md:gap-3">
           <img src="/LOGO/Logo_gauche.png" alt="Valorith" className="h-10" />
-          <span className="text-xs font-semibold tracking-[0.3em] text-[var(--color-muted)]">
+          <span className="hidden text-[10px] font-semibold tracking-[0.3em] text-[var(--color-muted)] sm:inline md:text-xs">
             VALORITH
           </span>
         </Link>
@@ -70,13 +70,13 @@ export default function Navbar() {
             </NavLink>
           </div>
           <Link
-            className="rounded-[var(--radius-md)] border border-[var(--color-gold)] bg-[var(--color-gold)] px-3 py-1 text-xs font-semibold text-black shadow-[0_0_18px_rgba(214,159,59,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(214,159,59,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60"
+            className="inline-flex h-9 min-w-[72px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-gold)] bg-[var(--color-gold)] px-3 py-1 text-xs font-semibold text-black shadow-[0_0_18px_rgba(214,159,59,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(214,159,59,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60"
             to="/game"
           >
             Jouer
           </Link>
           <button
-            className="rounded-[var(--radius-md)] border border-[var(--color-border)] px-3 py-1 text-xs text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 lg:hidden"
+            className="inline-flex h-9 min-w-[72px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border)] px-3 py-1 text-xs text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 lg:hidden"
             onClick={() => setMenuOpen((prev) => !prev)}
             aria-label="Ouvrir le menu"
             aria-expanded={menuOpen}
@@ -92,7 +92,7 @@ export default function Navbar() {
           id="visitor-menu"
           role="menu"
           aria-label="Navigation"
-          className="mt-4 grid gap-3 rounded-[var(--radius-md)] border-2 border-[var(--color-border)] bg-black/80 px-4 py-4 text-sm text-[var(--color-muted)] lg:hidden"
+          className="mt-4 grid gap-4 rounded-[var(--radius-md)] border-2 border-[var(--color-border)] bg-black/80 px-4 py-4 text-sm text-[var(--color-muted)] lg:hidden"
         >
           <NavLink
             role="menuitem"
