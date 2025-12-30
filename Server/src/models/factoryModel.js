@@ -19,3 +19,14 @@ export async function getFactoriesByRealm(realmId) {
     );
     return rows;
 }
+
+export async function getFactoryById(factoryId) {
+    const [rows] = await pool.query(
+        `SELECT id, realm_id, resource_id, base_cost, base_production
+        FROM factories
+        WHERE id = ?
+        LIMIT 1`,
+        [factoryId]
+    );
+    return rows[0] || null;
+}

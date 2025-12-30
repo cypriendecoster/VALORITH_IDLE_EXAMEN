@@ -1,10 +1,11 @@
-import { getAllSkills, getSkillsByRealm } from '../models/skillModel.js';
+﻿import { getAllSkills, getSkillsByRealm } from '../models/skillModel.js';
 
 export async function getSkillsController(req, res) {
   try {
     const skills = await getAllSkills();
     return res.status(200).json(skills);
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ message: error.message || 'Internal server error' });
   }
 }
@@ -18,6 +19,8 @@ export async function getSkillsByRealmController(req, res) {
     const skills = await getSkillsByRealm(realmId);
     return res.status(200).json(skills);
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ message: error.message || 'Internal server error' });
   }
 }
+

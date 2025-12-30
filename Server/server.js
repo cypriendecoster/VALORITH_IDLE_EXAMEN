@@ -10,6 +10,10 @@ import realmUnlockCostRoutes from './src/routes/realmUnlockCost.routes.js';
 import resourceRoutes from './src/routes/resource.routes.js';
 import factoryRoutes from './src/routes/factory.routes.js';
 import skillRoutes from './src/routes/skill.routes.js';
+import endgameRequirementRoutes from './src/routes/endgameRequirement.routes.js';
+import badgeRoutes from './src/routes/badge.routes.js';
+import rankingRoutes from './src/routes/ranking.routes.js';
+import adminRoutes from './src/routes/admin.routes.js';
 
 import playerResourceRoutes from './src/routes/playerResource.routes.js';
 import playerFactoryRoutes from './src/routes/playerFactory.routes.js';
@@ -18,6 +22,8 @@ import playerRealmRoutes from './src/routes/playerRealm.routes.js';
 import playerStateRoutes from './src/routes/playerState.routes.js';
 import playerStatsRoutes from './src/routes/playerStats.routes.js';
 import playerSessionRoutes from './src/routes/playerSession.routes.js';
+
+import gameRoutes from './src/routes/game.routes.js';
 
 dotenv.config();
 
@@ -41,6 +47,10 @@ app.use('/realm-unlock-costs', realmUnlockCostRoutes);
 app.use('/resources', resourceRoutes);
 app.use('/factories', factoryRoutes);
 app.use('/skills', skillRoutes);
+app.use('/endgame-requirements', endgameRequirementRoutes);
+app.use('/badges', badgeRoutes);
+app.use('/rankings', rankingRoutes);
+app.use('/admin', adminRoutes);
 
 app.use('/player/resources', playerResourceRoutes);
 app.use('/player/factories', playerFactoryRoutes);
@@ -49,6 +59,8 @@ app.use('/player/realms', playerRealmRoutes);
 app.use('/player/state', playerStateRoutes);
 app.use('/player/stats', playerStatsRoutes);
 app.use('/player/sessions', playerSessionRoutes);
+
+app.use('/game', gameRoutes);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

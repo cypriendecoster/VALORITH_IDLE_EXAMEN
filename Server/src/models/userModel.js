@@ -38,3 +38,25 @@ export async function findById(userId) {
     );
     return rows[0] || null;
 }
+
+export async function findByIdWithPassword(userId) {
+    const [rows] = await pool.query(
+        `SELECT id, email, username, role, password_hash FROM users WHERE id = ? LIMIT 1`,
+        [userId]
+    );
+    return rows[0] || null;
+}
+
+export async function updateUserPassword(userId, passwordHash) {
+    await pool.query(
+        `UPDATE users SET password_hash = ? WHERE id = ?`,
+        [passwordHash, userId]
+    );
+}
+
+export async function deleteUser(userId) {
+    await pool.query(
+        `DELETE FROM users WHERE id = ?`,
+        [userId]
+    );
+}
