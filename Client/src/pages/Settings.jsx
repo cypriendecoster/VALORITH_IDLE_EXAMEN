@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRequireAuth } from '../hooks/useRequireAuth.js';
 
 const LANGUAGE_OPTIONS = [
   { value: 'fr', label: 'Francais' },
@@ -6,6 +7,7 @@ const LANGUAGE_OPTIONS = [
 ];
 
 export default function Settings() {
+  useRequireAuth();
   const [musicEnabled, setMusicEnabled] = useState(
     () => localStorage.getItem('settingsMusic') !== '0'
   );

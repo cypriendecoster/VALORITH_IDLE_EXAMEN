@@ -1,4 +1,5 @@
 import { useGameData } from '../hooks/useGameData.js';
+import { useRequireAuth } from '../hooks/useRequireAuth.js';
 import ProgressPanel from '../components/Panel/ProgressPanel.jsx';
 
 function formatPlayTime(seconds) {
@@ -9,6 +10,7 @@ function formatPlayTime(seconds) {
 }
 
 export default function Profile() {
+  useRequireAuth();
   const { data, loading, error } = useGameData();
   const stats = data?.player?.stats || {};
   const badges = data?.badges || [];

@@ -26,6 +26,8 @@ export default function AppLayout() {
 
   function handleLogout() {
     localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+    window.dispatchEvent(new Event('auth-changed'));
     window.location.href = '/';
   }
 

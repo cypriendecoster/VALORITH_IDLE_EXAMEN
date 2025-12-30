@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameData } from '../hooks/useGameData.js';
 import { useIdleTick } from '../hooks/useIdleTick.js';
 import { getGameSnapshot, upgradeFactory, upgradeSkill } from '../services/gameService.js';
 import { useRealms } from '../hooks/useRealms.js';
 import { unlockRealm } from '../services/gameService.js';
 import { activateRealm } from '../services/realmService.js';
+import { useLocation } from 'react-router-dom';
+import { useRequireAuth } from '../hooks/useRequireAuth.js';
 
 import RealmPanel from '../components/Panel/RealmPanel.jsx';
 import ResourcesPanel from '../components/Panel/ResourcesPanel.jsx';
@@ -16,6 +18,7 @@ export default function GamePage() {
   const { data, loading, error, setData } = useGameData();
   const { data: realms, loading: realmsLoading, error: realmsError } = useRealms();
   const [actionError, setActionError] = useState('');
+  const [notice, setNotice] = useState('');
   const [idleSummary, setIdleSummary] = useState(null);
   const [showOnboarding, setShowOnboarding] = useState(
     () => localStorage.getItem('hideOnboarding') !== '1'
@@ -23,6 +26,16 @@ export default function GamePage() {
   const [dismissedIdleSignature, setDismissedIdleSignature] = useState(
     () => localStorage.getItem('idleSummaryDismissed') || ''
   );
+  const location = useLocation();
+
+  useRequireAuth();
+
+  useEffect(() => {
+    if (location.state?.notice) {
+      setNotice(location.state.notice);
+      window.history.replaceState({}, '');
+    }
+  }, [location.state]);
 
   useIdleTick(setData, setIdleSummary, dismissedIdleSignature);
   const activeRealmId = data?.player?.realms?.find((r) => r.is_active === 1)?.realm_id ??
@@ -113,6 +126,17 @@ export default function GamePage() {
         {actionError && (
           <div className="mt-3 rounded-[var(--radius-md)] border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
             {actionError}
+          </div>
+        )}
+        {notice && (
+          <div className="mt-3 flex items-center justify-between rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 px-3 py-2 text-sm text-[var(--color-text)]">
+            <span>{notice}</span>
+            <button
+              className="rounded-[var(--radius-sm)] border border-[var(--color-border)] px-2 py-1 text-xs text-[var(--color-muted)]"
+              onClick={() => setNotice('')}
+            >
+              Fermer
+            </button>
           </div>
         )}
         {idleSummary && idleSummary.signature !== dismissedIdleSignature && (

@@ -5,12 +5,15 @@ export function useAuth() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    async function handleLogin(data) {
+    async function handleLogin(data, options = {}) {
         try {
             setLoading(true);
             setError(null);
             const result = await login(data);
-            localStorage.setItem('token', result.token);
+            const storage = options.remember ? localStorage : sessionStorage;
+            localStorage.removeItem('token');
+            sessionStorage.removeItem('token');
+            storage.setItem('token', result.token);
             localStorage.removeItem('authToken');
             localStorage.removeItem('authUser');
             window.dispatchEvent(new Event('auth-changed'));
@@ -44,6 +47,7 @@ export function useAuth() {
 
     function logout() {
         localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
         localStorage.removeItem('authToken');
         localStorage.removeItem('authUser');
         window.dispatchEvent(new Event('auth-changed'));

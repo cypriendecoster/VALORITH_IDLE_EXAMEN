@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useRequireAuth } from '../hooks/useRequireAuth.js';
 import {
   getAdminTables,
   getAdminTableSchema,
@@ -26,6 +27,8 @@ export default function Admin() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  useRequireAuth({ role: 'ADMIN', redirectTo: '/login', unauthorizedTo: '/game' });
 
   useEffect(() => {
     async function loadTables() {
