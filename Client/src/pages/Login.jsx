@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth.js';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function Login() {
   const { handleLogin, loading, error } = useAuth();
@@ -53,6 +53,11 @@ export default function Login() {
             {loading ? '...' : 'Se connecter'}
           </button>
         </form>
+        <div className="mt-4 text-center">
+          <Link className="text-xs text-[var(--color-muted)] hover:text-[var(--color-text)]" to="/forgot-password">
+            Mot de passe oublie ?
+          </Link>
+        </div>
       </div>
     </div>
   );

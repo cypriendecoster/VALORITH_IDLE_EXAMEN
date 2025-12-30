@@ -11,6 +11,9 @@ export function useAuth() {
             setError(null);
             const result = await login(data);
             localStorage.setItem('token', result.token);
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('authUser');
+            window.dispatchEvent(new Event('auth-changed'));
             return result;
         } catch (error) {
             setError(error.message);
@@ -27,6 +30,9 @@ export function useAuth() {
             setError(null);
             const result = await register(data);
             localStorage.setItem('token', result.token);
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('authUser');
+            window.dispatchEvent(new Event('auth-changed'));
             return result;
         } catch (error) {
             setError(error.message);
@@ -38,6 +44,9 @@ export function useAuth() {
 
     function logout() {
         localStorage.removeItem('token');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('authUser');
+        window.dispatchEvent(new Event('auth-changed'));
     }
 
     return { loading, error, handleLogin, handleRegister, logout };

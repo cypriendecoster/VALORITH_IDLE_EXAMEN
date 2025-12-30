@@ -1,10 +1,11 @@
-import api from './api.js';
+﻿import api from './api.js';
 
 export async function getFactories() {
     try {
         const response = await api.get('/factories');
         return response.data;
     } catch (error) {
+        console.error(error);
         throw new Error(error.response?.data?.message || 'API error');
     }
 }
@@ -14,6 +15,7 @@ export async function getFactoriesByRealm(realmId) {
         const response = await api.get(`/factories/realm/${realmId}`);
         return response.data;
     } catch (error) {
+        console.error(error);
         throw new Error(error.response?.data?.message || 'API error');
     }
 }

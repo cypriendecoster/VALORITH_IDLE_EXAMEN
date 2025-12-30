@@ -1,4 +1,4 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -20,6 +20,8 @@ export async function ping() {
     const response = await api.get('/');
     return response.data;
   } catch (error) {
+    console.error(error);
     throw new Error(error.response?.data?.message || 'API error');
   }
 }
+
