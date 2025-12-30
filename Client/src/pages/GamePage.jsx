@@ -158,6 +158,8 @@ export default function GamePage() {
           onUnlock={handleUnlock}
           onActivate={handleActivate}
           playerRealms={data?.player?.realms}
+          resources={data?.resources}
+          playerResources={data?.player?.resources}
         />
 
         <ResourcesPanel data={data} loading={loading} error={error} />

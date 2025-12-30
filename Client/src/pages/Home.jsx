@@ -18,15 +18,15 @@ export default function Home() {
             <section className="mx-auto max-w-6xl px-6 pt-6 pb-16 lg:pt-10 lg:pb-24">
                 <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
                     <div>
-                        <p className="text-xs tracking-[0.3em] text-[var(--color-gold)]">
-                            IDLE FORGE • ROYAUMES À DÉBLOQUER
+                        <p className="text-xs tracking-[0.15em] sm:tracking-[0.3em] text-[var(--color-gold)]">
+                            IDLE FORGE - ROYAUMES A DEBLOQUER
                         </p>
                         <h1 className="mt-4 text-4xl font-heading md:text-5xl">
                             VALORITH <span className="text-[var(--color-gold)]">FORGE</span> IDLE
                         </h1>
                         <p className="mt-5 text-[var(--color-muted)]">
-                            Débloque des royaumes, construis tes usines et laisse ta forge produire
-                            pendant que tu es hors‑ligne. Une progression chill, orientée long terme.
+                            Debloque des royaumes, construis tes usines et laisse ta forge produire
+                            pendant que tu es hors-ligne. Une progression chill, orientee long terme.
                         </p>
 
                         <div className="mt-6 flex flex-wrap gap-4">
@@ -34,53 +34,64 @@ export default function Home() {
                                 to="/login"
                                 className="rounded-[var(--radius-md)] bg-[var(--color-gold)] px-6 py-3 font-semibold text-black"
                             >
-                                Jouer maintenant
+                                Jouer
                             </Link>
                             <Link
                                 to="/register"
                                 className="rounded-[var(--radius-md)] border border-[var(--color-border)] px-6 py-3 text-[var(--color-text)]"
                             >
-                                Se connecter / Créer un compte
+                                Creer un compte
                             </Link>
                         </div>
 
                         <p className="mt-4 text-sm text-[var(--color-muted)]">
-                            Pas de microtransactions, juste ta forge, tes royaumes et le temps.
+                            Pas de microtransactions. Une progression longue et satisfaisante.
                         </p>
                     </div>
 
-                    {/* Aperçu royaume */}
+                    {/* Apercu royaume */}
                     <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/80 p-5">
                         <div className="flex items-center justify-between text-sm text-[var(--color-muted)]">
-                            <span className="font-heading text-[var(--color-text)]">Aperçu du Royaume</span>
-                            <span>Forge en activité • Idle ON</span>
+                            <span className="font-heading text-[var(--color-text)]">Apercu du Royaume</span>
+                            <span>Forge en activite - Idle ON</span>
+                        </div>
+                        <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[10px] text-[var(--color-muted)] sm:text-xs">
+                            <div className="rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-black/40 px-2 py-1">
+                                12 royaumes
+                            </div>
+                            <div className="rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-black/40 px-2 py-1">
+                                +2h idle
+                            </div>
+                            <div className="rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-black/40 px-2 py-1">
+                                x2 bonus
+                            </div>
                         </div>
 
                         <div className="mt-4 space-y-3">
-                            <div className="h-40 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/50 p-2 md:h-48">
+                            <div className="h-40 max-h-[240px] rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/50 p-2 md:h-48">
                                 <img
                                     src="/MOCKUP/mockup.png"
-                                    alt="Aperçu complet"
+                                    alt="Apercu complet"
                                     className="h-full w-full rounded-[var(--radius-md)] object-cover"
                                 />
                             </div>
 
                             <div className="grid gap-3 md:grid-cols-3">
-                                <div className="h-24 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/50 p-2 md:h-28">
+                                <div className="h-24 max-h-[140px] rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/50 p-2 md:h-28">
                                     <img
                                         src="/MOCKUP/Royaumes.png"
                                         alt="Royaumes"
                                         className="h-full w-full rounded-[var(--radius-md)] object-cover"
                                     />
                                 </div>
-                                <div className="h-24 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/50 p-2 md:h-28">
+                                <div className="h-24 max-h-[140px] rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/50 p-2 md:h-28">
                                     <img
                                         src="/MOCKUP/Usines.png"
                                         alt="Usines"
                                         className="h-full w-full rounded-[var(--radius-md)] object-cover"
                                     />
                                 </div>
-                                <div className="h-24 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/50 p-2 md:h-28">
+                                <div className="h-24 max-h-[140px] rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/50 p-2 md:h-28">
                                     <img
                                         src="/MOCKUP/Idle_gains.png"
                                         alt="Idle gains"
@@ -93,19 +104,58 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Étapes */}
+            {/* Feature phare */}
+            <section className="mx-auto max-w-6xl px-6 pb-4">
+                <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/90 p-6 lg:p-8">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div>
+                            <p className="text-xs tracking-[0.15em] sm:tracking-[0.3em] text-[var(--color-gold)]">FEATURE PHARE</p>
+                            <h2 className="mt-2 text-3xl font-heading">Synergies entre royaumes</h2>
+                            <p className="mt-3 text-[var(--color-muted)]">
+                                Active un royaume pour booster la production d'un autre. Choix clairs,
+                                impact immediat, progression visible.
+                            </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2 text-xs text-[var(--color-muted)]">
+                            <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
+                                +10% production
+                            </span>
+                            <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
+                                Bonus croises
+                            </span>
+                            <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
+                                Choix strategiques
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Etapes */}
             <section className="mx-auto max-w-6xl px-6 py-12 text-center">
-                <p className="text-xs tracking-[0.3em] text-[var(--color-gold)]">ÉTAPES</p>
-                <h2 className="mt-3 text-3xl font-heading">COMMENT ÇA MARCHE ?</h2>
+                <p className="text-xs tracking-[0.15em] sm:tracking-[0.3em] text-[var(--color-gold)]">ETAPES</p>
+                <h2 className="mt-3 text-3xl font-heading">COMMENT CA MARCHE ?</h2>
                 <p className="mt-3 text-[var(--color-muted)]">
-                    En quelques étapes, ta forge passe de braises hésitantes à un réseau d’usines automatisées.
+                    En quelques etapes, ta forge passe de braises hesitantes a un reseau d'usines automatisees.
                 </p>
 
                 <div className="mt-10 grid gap-6 md:grid-cols-3">
                     {[
-                        ['1', 'Débloque les Royaumes', 'Progresse à travers différents royaumes et découvre des ressources uniques.'],
-                        ['2', 'Construis tes usines', 'Investis, améliore et débloque des compétences pour booster ta production.'],
-                        ['3', 'Laisse l’Idle travailler', 'Quitte le jeu, la forge continue. Reviens pour récupérer tes gains.']
+                        [
+                            '1',
+                            'Debloque les Royaumes',
+                            'Progresse a travers differents royaumes et decouvre des ressources uniques.'
+                        ],
+                        [
+                            '2',
+                            'Construis tes usines',
+                            'Investis, ameliore et debloque des competences pour booster ta production.'
+                        ],
+                        [
+                            '3',
+                            "Laisse l'Idle travailler",
+                            'Quitte le jeu, la forge continue. Reviens pour recuperer tes gains.'
+                        ]
                     ].map(([num, title, desc]) => (
                         <div
                             key={title}
@@ -121,20 +171,58 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Fonctionnalités */}
+            {/* Feature phare */}
+            <section className="mx-auto max-w-6xl px-6 pb-4">
+                <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/90 p-6 lg:p-8">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div>
+                            <p className="text-xs tracking-[0.15em] sm:tracking-[0.3em] text-[var(--color-gold)]">FEATURE PHARE</p>
+                            <h2 className="mt-2 text-3xl font-heading">Synergies entre royaumes</h2>
+                            <p className="mt-3 text-[var(--color-muted)]">
+                                Active un royaume pour booster la production d'un autre. Choix clairs,
+                                impact immediat, progression visible.
+                            </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2 text-xs text-[var(--color-muted)]">
+                            <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
+                                +10% production
+                            </span>
+                            <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
+                                Bonus croises
+                            </span>
+                            <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
+                                Choix strategiques
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Fonctionnalites */}
             <section className="mx-auto max-w-6xl px-6 py-12 text-center">
-                <p className="text-xs tracking-[0.3em] text-[var(--color-gold)]">GAMEPLAY</p>
-                <h2 className="mt-3 text-3xl font-heading">FONCTIONNALITÉS CLÉS</h2>
+                <p className="text-xs tracking-[0.15em] sm:tracking-[0.3em] text-[var(--color-gold)]">GAMEPLAY</p>
+                <h2 className="mt-3 text-3xl font-heading">FONCTIONNALITES CLES</h2>
                 <p className="mt-3 text-[var(--color-muted)]">
                     Tout ce qui fait tourner ta forge et rend la progression satisfaisante.
                 </p>
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-[var(--color-muted)]">
+                    <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
+                        Classement joueurs
+                    </span>
+                    <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
+                        Badge final
+                    </span>
+                    <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
+                        Defis hebdo
+                    </span>
+                </div>
 
                 <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                     {[
-                        ['Royaumes à débloquer', 'Enchaîne les mondes et découvre de nouvelles ressources.'],
-                        ['Usines & Skills', 'Combine usines et compétences pour booster la prod.'],
-                        ['Idle gains', 'La forge continue même hors‑ligne.'],
-                        ['Badge final', 'Un bonus permanent après les 12 royaumes.']
+                        ['Royaumes a debloquer', 'Enchaine les mondes et decouvre de nouvelles ressources.'],
+                        ['Usines & Skills', 'Combine usines et competences pour booster la prod.'],
+                        ['Idle gains', 'La forge continue meme hors-ligne.'],
+                        ['Badge final', 'Un bonus permanent apres les 12 royaumes.']
                     ].map(([title, desc]) => (
                         <div
                             key={title}
@@ -147,47 +235,46 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Aperçu + nouveautés */}
-            <section className="mx-auto max-w-6xl px-6 py-12 lg:flex lg:items-center lg:gap-10">
+            {/* Apercu + nouveautes */}
+            <section id="apercu" className="mx-auto max-w-6xl px-6 py-12 lg:flex lg:items-center lg:gap-10">
                 <div className="lg:w-1/2">
-                    <p className="text-xs tracking-[0.3em] text-[var(--color-gold)]">APERÇU</p>
-                    <h2 className="mt-3 text-3xl font-heading">APERÇU DU JEU</h2>
+                    <p className="text-xs tracking-[0.15em] sm:tracking-[0.3em] text-[var(--color-gold)]">APERCU</p>
+                    <h2 className="mt-3 text-3xl font-heading">APERCU DU JEU</h2>
                     <p className="mt-3 text-[var(--color-muted)]">
                         Progression long terme sans microtransactions agressives.
                     </p>
                     <p className="mt-4 text-sm text-[var(--color-muted)]">
-                        “Pas de microtransactions, progression chill, orientée long terme.”
+                        Pas de microtransactions. Une progression longue et satisfaisante.
                     </p>
                 </div>
 
-                <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-black/50 p-2">
+                <div className="max-h-[320px] rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-black/50 p-2">
                     <img
                         src="/GAMECAPTURE/Royaume_ressource.png"
-                        alt="Aperçu royaume"
-                        className="w-full rounded-[var(--radius-md)] object-cover"
+                        alt="Apercu royaume"
+                        className="h-full w-full rounded-[var(--radius-md)] object-cover"
                     />
                 </div>
-                <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-black/50 p-2">
+                <div className="max-h-[320px] rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-black/50 p-2">
                     <img
                         src="/GAMECAPTURE/Usine_competence.png"
-                        alt="Aperçu usines"
-                        className="w-full rounded-[var(--radius-md)] object-cover"
+                        alt="Apercu usines"
+                        className="h-full w-full rounded-[var(--radius-md)] object-cover"
                     />
                 </div>
-
             </section>
 
             <section className="mx-auto max-w-4xl px-6 py-12">
                 <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-6">
                     <div className="flex items-center justify-between">
-                        <h3 className="font-heading text-xl">Dernières nouveautés</h3>
-                        <span className="text-xs text-[var(--color-muted)]">Dernière mise à jour : 10/12/2025</span>
+                        <h3 className="font-heading text-xl">Dernieres nouveautes</h3>
+                        <span className="text-xs text-[var(--color-muted)]">Derniere mise a jour : 10/12/2025</span>
                     </div>
                     <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-[var(--color-muted)]">
-                        <li>Barre x10 / x100 / max pour les améliorations.</li>
+                        <li>Barre x10 / x100 / max pour les ameliorations.</li>
                         <li>Bonus x2 tous les 50 niveaux sur les usines.</li>
-                        <li>Les royaumes affichent désormais leur ressource unique.</li>
-                        <li>Améliorations de lisibilité de la Game Page.</li>
+                        <li>Les royaumes affichent desormais leur ressource unique.</li>
+                        <li>Ameliorations de lisibilite de la Game Page.</li>
                     </ul>
                 </div>
             </section>
@@ -196,23 +283,20 @@ export default function Home() {
             <section className="mx-auto max-w-5xl px-6 py-12">
                 <div className="flex flex-col items-center justify-between gap-6 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-6 md:flex-row">
                     <div>
-                        <h3 className="font-heading text-xl">Prêt à rallumer la forge ?</h3>
+                        <h3 className="font-heading text-xl">Pret a rallumer la forge ?</h3>
                         <p className="mt-2 text-sm text-[var(--color-muted)]">
                             Rejoins ton royaume et laisse la forge travailler pour toi.
                         </p>
                     </div>
-                    <Link
-                        to="/login"
+                    <a
+                        href="#apercu"
                         className="rounded-[var(--radius-md)] bg-[var(--color-gold)] px-6 py-3 font-semibold text-black"
                     >
-                        Lancer le jeu
-                    </Link>
+                        Voir un apercu
+                    </a>
                 </div>
             </section>
 
-            <footer className="border-t border-[var(--color-border)] py-8 text-center text-xs text-[var(--color-muted)]">
-                © 2025 Valorith Forge Idle — Tous droits réservés.
-            </footer>
         </main>
     );
 }

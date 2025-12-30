@@ -1,6 +1,22 @@
-export default function RealmPanel({ realms, loading, error, onUnlock, onActivate, playerRealms }) {
+﻿export default function RealmPanel({
+  realms,
+  loading,
+  error,
+  onUnlock,
+  onActivate,
+  playerRealms,
+  resources,
+  playerResources
+}) {
   const unlockedIds = new Set((playerRealms || []).map((r) => r.realm_id));
   const activeRealmId = (playerRealms || []).find((r) => r.is_active === 1)?.realm_id ?? null;
+  const resourceNameById = new Map((resources || []).map((r) => [r.id, r.name]));
+  const playerAmountById = new Map(
+    (playerResources || []).map((r) => [
+      r.resource_id,
+      Number(r.amount || 0) + Number(r.amount_carry || 0)
+    ])
+  );
 
   return (
     <section className="mt-8 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-5">
@@ -29,16 +45,40 @@ export default function RealmPanel({ realms, loading, error, onUnlock, onActivat
                     )}
                   </div>
 
-                  <p className="mt-1 text-xs text-[var(--color-muted)]">
-                    Conditions: {r.unlockCosts?.length || 0} ressources
-                  </p>
+                  <div className="mt-2 space-y-2 text-xs text-[var(--color-muted)]">
+                    {(r.unlockCosts || []).length === 0 && <p>Aucune condition</p>}
+                    {(r.unlockCosts || []).map((cost) => {
+                      const name = resourceNameById.get(cost.resource_id) || 'Ressource';
+                      const required = Number(cost.amount) || 0;
+                      const current = playerAmountById.get(cost.resource_id) || 0;
+                      const progress =
+                        required > 0 ? Math.min(100, Math.floor((current / required) * 100)) : 0;
+
+                      return (
+                        <div key={cost.id} className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span>{name}</span>
+                            <span>
+                              {Math.floor(current)}/{required}
+                            </span>
+                          </div>
+                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/50">
+                            <div
+                              className="h-full bg-[var(--color-gold)]/80"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
 
                   {!isUnlocked && (
                     <button
                       className="mt-2 w-full rounded-[var(--radius-md)] bg-[var(--color-gold)] px-3 py-2 text-sm font-semibold text-black"
                       onClick={() => onUnlock(r.id)}
                     >
-                      DǸbloquer
+                      Débloquer
                     </button>
                   )}
 
@@ -59,3 +99,5 @@ export default function RealmPanel({ realms, loading, error, onUnlock, onActivat
     </section>
   );
 }
+
+

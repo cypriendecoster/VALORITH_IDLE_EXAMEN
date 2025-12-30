@@ -37,7 +37,7 @@ export default function PlayerNavbar({ activeRealmName, totalResources, onLogout
           <NavLink className={({ isActive }) => linkClass(isActive)} to="/game">
             {({ isActive }) => (
               <span className="relative inline-flex flex-col items-center">
-                <span>Game</span>
+                <span>Jeu</span>
                 {isActive && <span className="sr-only">Page active</span>}
                 <span
                   className={
@@ -66,10 +66,10 @@ export default function PlayerNavbar({ activeRealmName, totalResources, onLogout
               Badges
             </NavLink>
             <NavLink className={({ isActive }) => linkClass(isActive)} to="/rankings">
-              Classement
+              Classements
             </NavLink>
             <NavLink className={({ isActive }) => linkClass(isActive)} to="/settings">
-              Parametres
+              Paramètres
             </NavLink>
             <NavLink className={({ isActive }) => linkClass(isActive)} to="/account">
               Compte
@@ -133,7 +133,7 @@ export default function PlayerNavbar({ activeRealmName, totalResources, onLogout
             className={({ isActive }) => linkClass(isActive)}
             to="/settings"
           >
-            Parametres
+            Paramètres
           </NavLink>
           <NavLink
             role="menuitem"
@@ -155,7 +155,7 @@ export default function PlayerNavbar({ activeRealmName, totalResources, onLogout
           </button>
           {activeRealmName && (
             <span className="rounded-full bg-black/40 px-3 py-1 text-xs text-[var(--color-text)]">
-              Royaume: {activeRealmName}
+              Royaume : {activeRealmName}
             </span>
           )}
           {typeof totalResources === 'number' && (

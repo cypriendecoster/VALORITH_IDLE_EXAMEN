@@ -19,6 +19,7 @@ import Terms from './pages/Terms.jsx';
 import Privacy from './pages/Privacy.jsx';
 import Tutorial from './pages/Tutorial.jsx';
 import Admin from './pages/Admin.jsx';
+import Contact from './pages/Contact.jsx';
 import AppLayout from './components/AppLayout.jsx';
 
 export default function App() {
@@ -43,6 +44,7 @@ export default function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/tutorial" element={<Tutorial />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<NotFound />} />
       </Route>

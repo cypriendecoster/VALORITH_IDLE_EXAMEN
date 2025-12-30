@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
 const baseLinkClass =
@@ -39,7 +39,7 @@ export default function AdminNavbar({ onLogout }) {
         <Link to="/admin" className="flex items-center gap-2 md:gap-3">
           <img src="/LOGO/Logo_gauche.png" alt="Valorith" className="h-10" />
           <span className="rounded-[var(--radius-md)] border border-red-500/60 bg-red-600/30 px-1.5 py-0.5 text-[10px] font-semibold text-red-100 md:px-2 md:py-1 md:text-xs">
-            ⚠ ADMIN MODE
+            ⚠ MODE ADMIN
           </span>
         </Link>
 
@@ -50,14 +50,14 @@ export default function AdminNavbar({ onLogout }) {
             }
             to="/admin"
           >
-            Dashboard
+            Tableau de bord
           </NavLink>
           <span className="hidden text-[var(--color-border)] md:inline" aria-hidden="true">
             |
           </span>
           <div className="hidden items-center gap-4 md:flex">
-            <NavLink className={() => linkClass(isTableActive('users'))} to="/admin?table=users">
-              Users
+            <NavLink className={() => linkClass(isTableActive('Utilisateurs'))} to="/admin?table=Utilisateurs">
+              Utilisateurs
             </NavLink>
             <NavLink className={() => linkClass(isTableActive('skills'))} to="/admin?table=skills">
               Tables/CRUD
@@ -66,13 +66,13 @@ export default function AdminNavbar({ onLogout }) {
               className={() => linkClass(isTableActive('support_tickets'))}
               to="/admin?table=support_tickets"
             >
-              Support Tickets
+              Tickets support
             </NavLink>
             <NavLink
               className={() => linkClass(isTableActive('system_settings'))}
               to="/admin?table=system_settings"
             >
-              System Settings
+              Paramètres système
             </NavLink>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function AdminNavbar({ onLogout }) {
             to="/game"
           >
             <span className="md:hidden">Retour</span>
-            <span className="hidden md:inline">Retour jeu</span>
+            <span className="hidden md:inline">Retour au jeu</span>
           </Link>
           <button
             className="inline-flex h-9 min-w-[72px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border)] px-3 py-1 text-xs text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 md:hidden"
@@ -116,15 +116,15 @@ export default function AdminNavbar({ onLogout }) {
             className={() => linkClass(location.pathname === '/admin' && !activeTable)}
             to="/admin"
           >
-            Dashboard
+            Tableau de bord
           </NavLink>
           <NavLink
             role="menuitem"
             onClick={() => setMenuOpen(false)}
-            className={() => linkClass(isTableActive('users'))}
-            to="/admin?table=users"
+            className={() => linkClass(isTableActive('Utilisateurs'))}
+            to="/admin?table=Utilisateurs"
           >
-            Users
+            Utilisateurs
           </NavLink>
           <NavLink
             role="menuitem"
@@ -140,7 +140,7 @@ export default function AdminNavbar({ onLogout }) {
             className={() => linkClass(isTableActive('support_tickets'))}
             to="/admin?table=support_tickets"
           >
-            Support Tickets
+            Tickets support
           </NavLink>
           <NavLink
             role="menuitem"
@@ -148,7 +148,7 @@ export default function AdminNavbar({ onLogout }) {
             className={() => linkClass(isTableActive('system_settings'))}
             to="/admin?table=system_settings"
           >
-            System Settings
+            Paramètres système
           </NavLink>
           <button
             type="button"
@@ -165,3 +165,5 @@ export default function AdminNavbar({ onLogout }) {
     </nav>
   );
 }
+
+

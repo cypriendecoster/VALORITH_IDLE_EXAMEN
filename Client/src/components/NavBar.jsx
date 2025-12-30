@@ -38,10 +38,10 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-4 md:flex">
           <NavLink to="/" end className={({ isActive }) => linkClass(isActive)}>
-            Home
+            Accueil
           </NavLink>
           <NavLink to="/lore" className={({ isActive }) => linkClass(isActive)}>
-            Lore
+            Univers
           </NavLink>
           <NavLink to="/faq" className={({ isActive }) => linkClass(isActive)}>
             FAQ
@@ -53,20 +53,20 @@ export default function Navbar() {
             to="/patchnotes"
             className={({ isActive }) => `hidden lg:inline-flex ${linkClass(isActive)}`.trim()}
           >
-            PatchNotes
+            Notes de patch
           </NavLink>
         </div>
 
         <div className="flex items-center gap-3 text-xs">
           <div className="hidden items-center gap-4 md:flex">
             <NavLink to="/login" className={({ isActive }) => linkClass(isActive)}>
-              Login
+              Connexion
             </NavLink>
             <NavLink
               to="/register"
               className={({ isActive }) => `hidden lg:inline-flex ${linkClass(isActive)}`.trim()}
             >
-              Register
+              Inscription
             </NavLink>
           </div>
           <Link
@@ -101,7 +101,7 @@ export default function Navbar() {
             end
             className={({ isActive }) => linkClass(isActive)}
           >
-            Home
+            Accueil
           </NavLink>
           <NavLink
             role="menuitem"
@@ -109,7 +109,7 @@ export default function Navbar() {
             to="/lore"
             className={({ isActive }) => linkClass(isActive)}
           >
-            Lore
+            Univers
           </NavLink>
           <NavLink
             role="menuitem"
@@ -117,7 +117,7 @@ export default function Navbar() {
             to="/patchnotes"
             className={({ isActive }) => linkClass(isActive)}
           >
-            PatchNotes
+            Notes de patch
           </NavLink>
           <NavLink
             role="menuitem"
@@ -133,7 +133,7 @@ export default function Navbar() {
             to="/login"
             className={({ isActive }) => linkClass(isActive)}
           >
-            Login
+            Connexion
           </NavLink>
           <NavLink
             role="menuitem"
@@ -141,7 +141,7 @@ export default function Navbar() {
             to="/register"
             className={({ isActive }) => linkClass(isActive)}
           >
-            Register
+            Inscription
           </NavLink>
         </div>
       )}

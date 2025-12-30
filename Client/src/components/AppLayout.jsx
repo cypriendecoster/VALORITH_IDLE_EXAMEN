@@ -3,6 +3,7 @@ import { useMe } from '../hooks/useMe.js';
 import Navbar from './NavBar.jsx';
 import PlayerNavbar from './PlayerNavbar.jsx';
 import AdminNavbar from './AdminNavbar.jsx';
+import Footer from './Footer.jsx';
 
 function getActiveRealmName(data) {
   const activeRealmId = data?.player?.realms?.find((r) => r.is_active === 1)?.realm_id ??
@@ -51,7 +52,10 @@ export default function AppLayout() {
         Aller au contenu
       </a>
       {navbar}
-      <Outlet />
+      <div id="top">
+        <Outlet />
+      </div>
+      <Footer />
     </>
   );
 }
