@@ -10,6 +10,19 @@ function linkClass(isActive) {
   return `${baseLinkClass} ${isActive ? activeLinkClass : ''}`.trim();
 }
 
+const formatNumber = (value) =>
+  new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(value || 0));
+const formatCompact = (value) => {
+  const numeric = Number(value || 0);
+  const abs = Math.abs(numeric);
+  if (!Number.isFinite(numeric)) return '0';
+  if (abs >= 1e12) return `${formatNumber(numeric / 1e12)} Bn`;
+  if (abs >= 1e9) return `${formatNumber(numeric / 1e9)} Md`;
+  if (abs >= 1e6) return `${formatNumber(numeric / 1e6)} M`;
+  if (abs >= 1e3) return `${formatNumber(numeric / 1e3)} K`;
+  return formatNumber(numeric);
+};
+
 export default function PlayerNavbar({ activeRealmName, totalResources, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => {
@@ -159,8 +172,11 @@ export default function PlayerNavbar({ activeRealmName, totalResources, onLogout
             </span>
           )}
           {typeof totalResources === 'number' && (
-            <span className="rounded-full bg-black/40 px-3 py-1 text-xs text-[var(--color-text)]">
-              Total: {Math.floor(totalResources)}
+            <span
+              className="rounded-full bg-black/40 px-3 py-1 text-xs text-[var(--color-text)]"
+              title={formatNumber(Math.floor(totalResources))}
+            >
+              Total: {formatCompact(Math.floor(totalResources))}
             </span>
           )}
         </div>

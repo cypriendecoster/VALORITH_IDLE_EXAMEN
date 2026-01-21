@@ -1,8 +1,71 @@
-export default function SkillPanel({ data, loading, error, onUpgrade }) {
+const normalizeKey = (value = '') =>
+  value
+    .toLowerCase()
+    .replace(/[œ]/g, 'oe')
+    .replace(/[æ]/g, 'ae')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+const formatNumber = (value) =>
+  new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(value || 0));
+const formatCompact = (value) => {
+  const numeric = Number(value || 0);
+  const abs = Math.abs(numeric);
+  if (!Number.isFinite(numeric)) return '0';
+  if (abs >= 1e12) return `${formatNumber(numeric / 1e12)} Bn`;
+  if (abs >= 1e9) return `${formatNumber(numeric / 1e9)} Md`;
+  if (abs >= 1e6) return `${formatNumber(numeric / 1e6)} M`;
+  if (abs >= 1e3) return `${formatNumber(numeric / 1e3)} K`;
+  return formatNumber(numeric);
+};
+
+const formatTitle = (value = '') =>
+  value
+    .toLocaleLowerCase('fr-FR')
+    .replace(/\b\p{L}/gu, (letter) => letter.toLocaleUpperCase('fr-FR'));
+
+export default function SkillPanel({ data, loading, error, onUpgrade, inlineError }) {
+  const formatEffect = (type, value) => {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return 'Effet inconnu';
+    const percent = Math.round(numeric * 100);
+    switch (type) {
+      case 'PROD_MULTIPLIER':
+        return `${percent >= 0 ? '+' : ''}${percent}% production`;
+      case 'GLOBAL_MULTIPLIER':
+        return `${percent >= 0 ? '+' : ''}${percent}% production globale`;
+      case 'COST_REDUCTION':
+        return `${percent}% coût`;
+      case 'IDLE_BONUS':
+        return `${percent >= 0 ? '+' : ''}${percent}% gains hors connexion`;
+      default:
+        return `${type} (${numeric})`;
+    }
+  };
   const activeRealmId = data?.player?.realms?.find((r) => r.is_active === 1)?.realm_id ??
     data?.player?.realms?.[0]?.realm_id ?? null;
   const activeRealm = data?.realms?.find((r) => r.id === activeRealmId);
   const activeRealmName = activeRealm ? activeRealm.name : 'Royaume';
+  const normalizedRealmName = normalizeKey(activeRealmName);
+  const isAshkarRealm = normalizedRealmName.includes('ashkar');
+  const isAquerusRealm = normalizedRealmName.includes('aquerus');
+  const ashkarSkillImages = {
+    'souffle des forges': '/ASHKAR/Souffle_des_forges.png',
+    'optimisation des fours': '/ASHKAR/Optimisation_des_fours.png',
+    'brasiers persistants': '/ASHKAR/Brasiers_persistants.png',
+    'maitrise pyroclastique': '/ASHKAR/Maitre_pyroclastique.png',
+    'coeur d ashkar': '/ASHKAR/Coeur_ashkar.png',
+  };
+  const aquerusSkillImages = {
+    'courants profonds': '/AQUERUS/Courants_profonds.png',
+    'flux persistant': '/AQUERUS/Flux_persistant.png',
+    'pression optimale': '/AQUERUS/Pression_optimale.png',
+    'saturation abyssale': '/AQUERUS/Saturation_abyssale.png',
+    'coeur abyssal': '/AQUERUS/Coeur_abyssal.png',
+    'coeur des abysses': '/AQUERUS/Coeur_abyssal.png',
+  };
   const unlockedRealmIds = new Set((data?.player?.realms || []).map((r) => r.realm_id));
   const isActiveUnlocked = activeRealmId ? unlockedRealmIds.has(activeRealmId) : false;
 
@@ -26,7 +89,7 @@ export default function SkillPanel({ data, loading, error, onUpgrade }) {
 
       {!loading && !error && data && !isActiveUnlocked && activeRealmId && (
         <p className="mt-3 text-sm text-[var(--color-muted)]">
-          Royaume non debloque. Debloquez-le pour acceder aux skills.
+          Royaume non débloqué. Débloquez-le pour accéder aux skills.
         </p>
       )}
 
@@ -38,6 +101,11 @@ export default function SkillPanel({ data, loading, error, onUpgrade }) {
               const playerSkill = data.player.skills.find((ps) => ps.skill_id === s.id);
               const level = playerSkill ? Number(playerSkill.level) : 0;
               const isMax = level >= Number(s.max_level);
+              const skillImage = isAshkarRealm
+                ? ashkarSkillImages[normalizeKey(s.name)]
+                : isAquerusRealm
+                  ? aquerusSkillImages[normalizeKey(s.name)]
+                  : null;
 
               const cost = Math.ceil(
                 Number(s.base_cost_amount) * Math.pow(Number(s.cost_growth_factor), level)
@@ -53,28 +121,51 @@ export default function SkillPanel({ data, loading, error, onUpgrade }) {
                   key={s.id}
                   className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 p-4"
                 >
-                  <p className="font-heading">{s.name}</p>
-                  <p className="text-xs text-[var(--color-muted)]">{s.description}</p>
-                  <p className="text-xs text-[var(--color-muted)]">
-                    Effet: {s.effect_type} ({s.effect_value})
-                  </p>
-                  <span className="inline-flex w-fit rounded-full border border-[var(--color-border)] bg-black/30 px-2 py-0.5 text-[10px] text-[var(--color-muted)]">
-                    Niveau {level} / {s.max_level}
-                  </span>
-                  <p className="text-xs text-[var(--color-muted)]">
-                    Cout: {cost} {costResourceName}
-                  </p>
+                  {skillImage && (
+                    <img
+                      src={skillImage}
+                      alt={s.name}
+                      className="h-20 w-full rounded-[var(--radius-sm)] object-cover"
+                      loading="lazy"
+                    />
+                  )}
+                  <p className="font-heading">{formatTitle(s.name)}</p>
+                  <p className="text-sm text-[var(--color-text)]/85">{s.description}</p>
+                  <div className="grid gap-2">
+                    <p className="text-sm text-[var(--color-text)]/85">
+                      Effet: {formatEffect(s.effect_type, s.effect_value)}
+                    </p>
+                    <span className="inline-flex w-fit rounded-full border border-[var(--color-border)] bg-black/30 px-2 py-0.5 text-xs text-[var(--color-text)]/85">
+                      Niveau {level} / {s.max_level}
+                      {isMax ? ' · Max' : ''}
+                    </span>
+                  </div>
+                  <div className="grid gap-1">
+                    <p
+                      className="text-sm text-[var(--color-text)]/85"
+                      title={`${formatNumber(cost)} ${costResourceName}`}
+                    >
+                      Coût: {formatCompact(cost)} {costResourceName}
+                    </p>
+                  </div>
                   {!canAfford && (
-                    <p className="text-xs text-red-300">Ressources insuffisantes.</p>
+                    <p className="text-sm text-red-300">Ressources insuffisantes.</p>
                   )}
 
                   <button
-                    className="mt-2 w-full rounded-[var(--radius-md)] bg-[var(--color-gold)] px-3 py-2 text-sm font-semibold text-black disabled:opacity-40"
+                    className={`mt-2 w-full rounded-[var(--radius-md)] px-3 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 ${
+                      isMax
+                        ? 'bg-gray-600 text-gray-200'
+                        : 'bg-[var(--color-gold)] text-black hover:brightness-110'
+                    } disabled:opacity-40`}
                     disabled={!canAfford || isMax}
                     onClick={() => onUpgrade(s.id)}
                   >
-                    {isMax ? 'Max' : level > 0 ? 'Ameliorer' : 'Debloquer'}
+                    {isMax ? 'Max atteint' : level > 0 ? 'Améliorer' : 'Débloquer'}
                   </button>
+                  {inlineError?.scope === 'skill' && inlineError.id === s.id && (
+                    <p className="mt-2 text-sm text-red-300">{inlineError.message}</p>
+                  )}
                 </div>
               );
             })}

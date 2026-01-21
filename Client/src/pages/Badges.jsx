@@ -44,7 +44,8 @@ export default function Badges() {
       <div className="pointer-events-none fixed inset-0 -z-10">
         <img
           src="/ROYAUMES/HERO%20HEADER%20ASHKAR.png"
-          alt="Valorith"
+          alt=""
+          aria-hidden="true"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black/45"></div>
@@ -52,8 +53,8 @@ export default function Badges() {
 
       <div className="mx-auto max-w-6xl px-6 py-10">
         <h1 className="text-3xl font-heading">Badges</h1>
-        <p className="mt-2 text-[var(--color-text)] opacity-80">
-          Collection detaillee des badges. {earnedCount}/{badges.length} obtenus.
+        <p className="mt-2 text-[var(--color-muted)]">
+          Collection détaillée des badges. {earnedCount}/{badges.length} obtenus.
         </p>
 
         {loading && <p className="mt-3 text-sm text-[var(--color-text)] opacity-80">Chargement...</p>}
@@ -61,23 +62,23 @@ export default function Badges() {
 
         {!loading && !error && data && (
           <>
-            <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-[var(--color-text)] opacity-90">
+            <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-[var(--color-muted)]">
               <label className="flex items-center gap-2">
                 Statut
                 <select
-                  className="rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-black/40 px-2 py-1 text-[var(--color-text)]"
+                  className="rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-black/40 px-2 py-1 text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60"
                   value={statusFilter}
                   onChange={(event) => setStatusFilter(event.target.value)}
                 >
                   <option value="all">Tous</option>
                   <option value="earned">Obtenus</option>
-                  <option value="locked">Verrouilles</option>
+                  <option value="locked">Verrouillés</option>
                 </select>
               </label>
               <label className="flex items-center gap-2">
                 Tri
                 <select
-                  className="rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-black/40 px-2 py-1 text-[var(--color-text)]"
+                  className="rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-black/40 px-2 py-1 text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60"
                   value={sortKey}
                   onChange={(event) => setSortKey(event.target.value)}
                 >
@@ -112,7 +113,7 @@ export default function Badges() {
                       </div>
                       <div className="min-w-0">
                         <p className="font-heading">{badge.name}</p>
-                        <p className="mt-1 text-[11px] text-[var(--color-text)] opacity-80 sm:text-xs">
+                        <p className="mt-1 text-xs text-[var(--color-text)] opacity-80 sm:text-sm">
                           {badge.description}
                         </p>
                       </div>
@@ -123,9 +124,9 @@ export default function Badges() {
                             : 'ml-auto text-xs text-[var(--color-text)] opacity-70'
                         }
                       >
-                        {earned ? 'Obtenu' : 'Verrouille'}
+                        {earned ? 'Obtenu' : 'Verrouillé'}
                         <span className="sr-only">
-                          {earned ? ' - Badge obtenu' : ' - Badge verrouille'}
+                          {earned ? ' - Badge obtenu' : ' - Badge verrouillé'}
                         </span>
                       </span>
                     </div>

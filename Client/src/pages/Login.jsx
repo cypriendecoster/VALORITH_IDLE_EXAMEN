@@ -69,8 +69,13 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex items-center justify-center">
-      <div className="w-full max-w-md p-8 rounded-[var(--radius-lg)] bg-[var(--color-panel)] shadow-lg border border-[var(--color-border)]">
+    <div className="relative min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex items-center justify-center overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-32 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(246,213,94,0.25),rgba(246,213,94,0))] blur-2xl" />
+        <div className="absolute -bottom-24 right-12 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(148,163,184,0.2),rgba(148,163,184,0))] blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_55%)]" />
+      </div>
+      <div className="relative w-full max-w-md p-8 rounded-[var(--radius-lg)] bg-[var(--color-panel)] shadow-lg border border-[var(--color-border)]">
         <img
           src="/LOGO/Logo_gauche.png"
           alt="Valorith"

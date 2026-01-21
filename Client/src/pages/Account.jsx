@@ -56,7 +56,8 @@ export default function Account() {
       <div className="pointer-events-none fixed inset-0 -z-10">
         <img
           src="/ROYAUMES/HERO%20HEADER%20ASHKAR.png"
-          alt="Valorith"
+          alt=""
+          aria-hidden="true"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black/45"></div>
@@ -65,7 +66,7 @@ export default function Account() {
       <div className="mx-auto max-w-4xl px-6 py-10">
         <h1 className="text-3xl font-heading">Compte</h1>
         <p className="mt-2 text-[var(--color-muted)]">
-          Reinitialiser la progression ou supprimer le compte.
+          Réinitialiser la progression ou supprimer le compte.
         </p>
 
         {error && (
@@ -80,9 +81,9 @@ export default function Account() {
         )}
 
         <section className="mt-6 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-5">
-          <h2 className="font-heading text-xl">Reset du jeu</h2>
-          <p className="mt-1 text-xs text-[var(--color-muted)]">
-            Cette action supprime la progression (usines, skills, ressources) et redemarre le jeu.
+          <h2 className="font-heading text-xl">Réinitialisation du jeu</h2>
+          <p className="mt-1 text-sm text-[var(--color-muted)]">
+            Cette action supprime la progression (usines, skills, ressources) et redémarre le jeu.
           </p>
           <form onSubmit={handleResetProgress} className="mt-4 grid gap-3" aria-busy={resetLoading}>
             <label className="text-xs text-[var(--color-muted)]">
@@ -91,15 +92,16 @@ export default function Account() {
                 className="input-base mt-2 w-full"
                 type="password"
                 placeholder="Mot de passe"
+                autoComplete="current-password"
                 value={resetPasswordInput}
                 onChange={(e) => setResetPasswordInput(e.target.value)}
               />
             </label>
             <button
               disabled={resetLoading}
-              className="w-full rounded-[var(--radius-md)] bg-[var(--color-gold)] px-4 py-2 text-sm font-semibold text-black"
+              className="w-full rounded-[var(--radius-md)] bg-[var(--color-gold)] px-4 py-2 text-sm font-semibold text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60"
             >
-              {resetLoading ? 'Reinitialisation...' : 'Reinitialiser'}
+              {resetLoading ? 'Réinitialisation...' : 'Réinitialiser'}
             </button>
           </form>
         </section>
@@ -109,14 +111,14 @@ export default function Account() {
           role="region"
           aria-label="Zone de danger"
         >
-          <p className="text-xs tracking-[0.2em] text-red-200">DANGER ZONE</p>
+          <p className="text-xs tracking-[0.2em] text-red-200">ZONE DE DANGER</p>
           <section className="mt-3">
             <h2 className="font-heading text-xl">Supprimer le compte</h2>
-          <p className="mt-1 text-xs text-[var(--color-muted)]">
-            Cette action est irreversible. Compte, progression, stats et badges seront supprimes.
+          <p className="mt-1 text-sm text-[var(--color-muted)]">
+            Cette action est irréversible. Compte, progression, stats et badges seront supprimés.
           </p>
-          <p className="mt-2 text-xs text-[var(--color-muted)]">
-            Verifie que tu n'as plus besoin des donnees liees a ce compte avant de continuer.
+          <p className="mt-2 text-sm text-[var(--color-muted)]">
+            Vérifie que tu n'as plus besoin des données liées à ce compte avant de continuer.
           </p>
           <form onSubmit={handleDeleteAccount} className="mt-4 grid gap-3" aria-busy={deleteLoading}>
             <label className="text-xs text-[var(--color-muted)]">
@@ -125,6 +127,7 @@ export default function Account() {
                 className="input-base mt-2 w-full"
                 type="password"
                 placeholder="Mot de passe"
+                autoComplete="current-password"
                 value={deletePasswordInput}
                 onChange={(e) => setDeletePasswordInput(e.target.value)}
               />
@@ -141,7 +144,7 @@ export default function Account() {
             </label>
             <button
               disabled={deleteConfirmInput !== 'SUPPRIMER' || deleteLoading}
-              className="w-full rounded-[var(--radius-md)] bg-red-500 px-4 py-2 text-sm font-semibold text-white"
+              className="w-full rounded-[var(--radius-md)] bg-red-500 px-4 py-2 text-sm font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black/60"
             >
               {deleteLoading ? 'Suppression...' : 'Supprimer mon compte'}
             </button>

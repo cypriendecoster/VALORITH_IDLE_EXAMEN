@@ -49,22 +49,23 @@ export default function AppLayout() {
   }
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, left: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   }, [location.pathname]);
 
   return (
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-[var(--radius-md)] focus:bg-[var(--color-gold)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-black"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-[var(--radius-md)] focus:border focus:border-[var(--color-border)] focus:bg-[var(--color-panel)]/90 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--color-text)] focus:shadow-lg"
       >
         Aller au contenu
       </a>
       {navbar}
       <div id="top">
-        <div id="main-content">
+        <main id="main-content">
           <Outlet />
-        </div>
+        </main>
       </div>
       <Footer />
     </>

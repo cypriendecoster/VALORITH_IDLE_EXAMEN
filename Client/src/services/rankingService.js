@@ -9,13 +9,3 @@ export async function getEndgameRanking(limit = 50) {
     throw new Error(error.response?.data?.message || 'API error');
   }
 }
-
-export async function getResourceRanking(limit = 50) {
-  try {
-    const response = await api.get(`/rankings/resources?limit=${limit}`);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error(error.response?.data?.message || 'API error');
-  }
-}

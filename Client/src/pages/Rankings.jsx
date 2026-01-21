@@ -1,46 +1,50 @@
-import { useEffect, useState } from 'react';
-import { getEndgameRanking, getResourceRanking } from '../services/rankingService.js';
+import { useCallback, useEffect, useState } from 'react';
+import { getEndgameRanking } from '../services/rankingService.js';
 
-function formatDate(value) {
-  if (!value) return 'N/A';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return 'N/A';
-  return date.toLocaleString();
+function formatDuration(seconds) {
+  const total = Number(seconds);
+  if (!Number.isFinite(total) || total < 0) return 'N/A';
+  const days = Math.floor(total / 86400);
+  const hours = Math.floor((total % 86400) / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const secs = Math.floor(total % 60);
+  const parts = [];
+  if (days > 0) parts.push(`${days}j`);
+  if (hours > 0 || days > 0) parts.push(`${hours}h`);
+  if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}m`);
+  parts.push(`${secs}s`);
+  return parts.join(' ');
 }
 
 export default function Rankings() {
   const [endgame, setEndgame] = useState([]);
-  const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
-      const [endgameData, resourceData] = await Promise.all([
-        getEndgameRanking(50),
-        getResourceRanking(50),
-      ]);
+      const endgameData = await getEndgameRanking(50);
       setEndgame(endgameData || []);
-      setResources(resourceData || []);
     } catch (err) {
       setError(err.message || 'API error');
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   return (
     <main className="relative min-h-screen text-[var(--color-text)]">
       <div className="pointer-events-none fixed inset-0 -z-10">
         <img
-          src="/ROYAUMES/HERO%20HEADER%20ASHKAR.png"
-          alt="Illustration du royaume d'Ashkar"
+          src="/HERO_HEADER/HERO_HEADER_ACCUEIL.png"
+          alt=""
+          aria-hidden="true"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black/45"></div>
@@ -49,9 +53,9 @@ export default function Rankings() {
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-heading">Classement global</h1>
+            <h1 className="text-3xl font-heading">Classement fin du jeu</h1>
             <p className="mt-2 text-[var(--color-muted)]">
-              Fin du jeu et ressources collectees.
+              Les joueurs qui terminent le plus vite. Temps calculé depuis la création du compte.
             </p>
           </div>
           <button
@@ -60,7 +64,7 @@ export default function Rankings() {
             disabled={loading}
             className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/30 px-4 py-2 text-sm text-[var(--color-text)] transition hover:border-[var(--color-gold)]/60 hover:text-[var(--color-gold)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Rafraichir
+            Rafraîchir
           </button>
         </div>
 
@@ -76,45 +80,28 @@ export default function Rankings() {
         )}
 
         {!loading && !error && (
-          <div className="mt-6 grid gap-6 md:grid-cols-2">
+          <div className="mt-6">
             <section className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-5">
               <div className="flex items-center justify-between">
                 <h2 className="font-heading text-xl">Fin du jeu</h2>
                 <span className="text-xs text-[var(--color-muted)]">Top 50</span>
               </div>
               <div className="mt-4 grid gap-2 text-sm text-[var(--color-muted)]">
-                {endgame.length === 0 && <p>Aucune entree.</p>}
+                {endgame.length === 0 && <p>Aucune entrée.</p>}
                 {endgame.map((row, index) => (
                   <div
                     key={`${row.user_id}-${row.obtained_at}`}
-                    className="flex items-center justify-between"
+                    className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"
                   >
-                    <span className={index < 3 ? 'text-[var(--color-gold-strong)]' : undefined}>
+                    <span
+                      className={`min-w-0 truncate${
+                        index < 3 ? ' text-[var(--color-gold-strong)]' : ''
+                      }`}
+                    >
                       #{index + 1} {row.username || 'Joueur'}
                     </span>
-                    <span className="text-right tabular-nums">{formatDate(row.obtained_at)}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-5">
-              <div className="flex items-center justify-between">
-                <h2 className="font-heading text-xl">Ressources totales</h2>
-                <span className="text-xs text-[var(--color-muted)]">Top 50</span>
-              </div>
-              <div className="mt-4 grid gap-2 text-sm text-[var(--color-muted)]">
-                {resources.length === 0 && <p>Aucune entree.</p>}
-                {resources.map((row, index) => (
-                  <div
-                    key={`${row.user_id}-${row.total_lifetime}`}
-                    className="flex items-center justify-between"
-                  >
-                    <span className={index < 3 ? 'text-[var(--color-gold-strong)]' : undefined}>
-                      #{index + 1} {row.username || 'Joueur'}
-                    </span>
-                    <span className="text-right tabular-nums">
-                      {Math.floor(Number(row.total_lifetime) || 0)}
+                    <span className="text-left tabular-nums sm:text-right sm:whitespace-nowrap">
+                      {formatDuration(row.duration_seconds)}
                     </span>
                   </div>
                 ))}

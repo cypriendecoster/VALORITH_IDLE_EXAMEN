@@ -1,6 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function ProgressPanel({ data, loading, error }) {
+  const formatNumber = (value) =>
+    new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(value || 0));
+  const formatCompact = (value) => {
+    const numeric = Number(value || 0);
+    const abs = Math.abs(numeric);
+    if (!Number.isFinite(numeric)) return '0';
+    if (abs >= 1e12) return `${formatNumber(numeric / 1e12)} Bn`;
+    if (abs >= 1e9) return `${formatNumber(numeric / 1e9)} Md`;
+    if (abs >= 1e6) return `${formatNumber(numeric / 1e6)} M`;
+    if (abs >= 1e3) return `${formatNumber(numeric / 1e3)} K`;
+    return formatNumber(numeric);
+  };
   const totalRealms = data?.realms?.length || 0;
   const unlockedRealms = data?.player?.realms?.length || 0;
   const allRealmsUnlocked = totalRealms > 0 && unlockedRealms >= totalRealms;
@@ -29,16 +41,23 @@ export default function ProgressPanel({ data, loading, error }) {
   const [showVictory, setShowVictory] = useState(
     () => finalBadgeUnlocked && localStorage.getItem('victoryDismissed') !== '1'
   );
+  const victoryButtonRef = useRef(null);
+
+  useEffect(() => {
+    if (showVictory && victoryButtonRef.current) {
+      victoryButtonRef.current.focus();
+    }
+  }, [showVictory]);
 
   return (
     <section className="mt-6 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-4 sm:p-5">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-xl">Progression</h2>
-        <span className="text-xs text-[var(--color-muted)]">
+        <span className="text-sm text-[var(--color-muted)]">
           Royaumes: {unlockedRealms} / {totalRealms}
         </span>
       </div>
-      <p className="mt-1 text-xs text-[var(--color-muted)]">
+      <p className="mt-1 text-sm text-[var(--color-muted)]">
         Progression globale: {overallProgress}% (Royaumes: {realmProgress}%)
       </p>
 
@@ -58,27 +77,27 @@ export default function ProgressPanel({ data, loading, error }) {
           {finalBadgeUnlocked && (
             <div className="rounded-[var(--radius-md)] border border-[var(--color-gold)] bg-[var(--color-gold)]/15 p-4 text-[var(--color-text)]">
               <p className="text-sm font-heading">Victoire</p>
-              <p className="mt-1 text-xs text-[var(--color-muted)]">
-                Badge final obtenu. Valorith Idle est termine.
+              <p className="mt-1 text-sm text-[var(--color-muted)]">
+                Badge final obtenu. Valorith Idle est terminé.
               </p>
             </div>
           )}
           <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 p-4">
             <p className="text-sm font-heading">Objectif 1</p>
-            <p className="mt-1 text-xs text-[var(--color-muted)]">
-              Debloquer tous les royaumes.
+            <p className="mt-1 text-sm text-[var(--color-muted)]">
+              Débloquer tous les royaumes.
             </p>
-            <p className="text-xs text-[var(--color-muted)]">
-              Statut: {allRealmsUnlocked ? 'Termine' : 'En cours'}
+            <p className="text-sm text-[var(--color-muted)]">
+              Statut: {allRealmsUnlocked ? 'Terminé' : 'En cours'}
             </p>
           </div>
 
           <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 p-4">
             <p className="text-sm font-heading">Objectif 2</p>
-            <p className="mt-1 text-xs text-[var(--color-muted)]">
-              Endgame requirements.
+            <p className="mt-1 text-sm text-[var(--color-muted)]">
+              Exigences de fin de jeu.
             </p>
-            <div className="mt-2 grid gap-2 text-xs text-[var(--color-muted)]">
+            <div className="mt-2 grid gap-2 text-sm text-[var(--color-muted)]">
               {requirements.map((req) => {
                 const res = resources.find((r) => r.id === req.resource_id);
                 const name = res ? res.name : 'Ressource';
@@ -90,8 +109,12 @@ export default function ProgressPanel({ data, loading, error }) {
                 return (
                   <div key={req.id} className="flex items-center justify-between">
                     <span>{name}</span>
-                    <span className="text-right tabular-nums">
-                      {Math.floor(amount)} / {target} {done ? 'OK' : ''}
+                    <span
+                      className="text-right tabular-nums"
+                      title={`${formatNumber(Math.floor(amount))} / ${formatNumber(target)}`}
+                    >
+                      {formatCompact(Math.floor(amount))} / {formatCompact(target)}
+                      {done ? ' ✓' : ''}
                     </span>
                   </div>
                 );
@@ -101,25 +124,37 @@ export default function ProgressPanel({ data, loading, error }) {
 
           <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 p-4">
             <p className="text-sm font-heading">Badge final</p>
-            <p className="mt-1 text-xs text-[var(--color-muted)]">
-              {finalBadge ? finalBadge.name : 'Monstre du Idle'}
-            </p>
-            <p className="text-xs text-[var(--color-muted)]">
-              Statut: {finalBadgeUnlocked ? 'Debloque' : 'Verrouille'}
+            <div className="mt-2 flex items-center gap-3">
+              {finalBadge?.icon && (
+                <img
+                  src={`/BADGES/${finalBadge.icon}`}
+                  alt={finalBadge.name}
+                  className={`h-10 w-10 rounded-full border border-[var(--color-border)] object-cover ${
+                    finalBadgeUnlocked ? '' : 'opacity-60 grayscale'
+                  }`}
+                  loading="lazy"
+                />
+              )}
+              <p className="text-sm text-[var(--color-muted)]">
+                {finalBadge ? finalBadge.name : 'Monstre du Idle'}
+              </p>
+            </div>
+            <p className="text-sm text-[var(--color-muted)]">
+              Statut: {finalBadgeUnlocked ? 'Débloqué' : 'Verrouillé'}
             </p>
           </div>
 
           <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 p-4">
             <p className="text-sm font-heading">Badges obtenus</p>
             {earnedBadges.length === 0 && (
-              <p className="mt-1 text-xs text-[var(--color-muted)]">Aucun badge obtenu.</p>
+              <p className="mt-1 text-sm text-[var(--color-muted)]">Aucun badge obtenu.</p>
             )}
             {earnedBadges.length > 0 && (
-              <div className="mt-2 grid gap-2 text-xs text-[var(--color-muted)]">
+              <div className="mt-2 grid gap-2 text-sm text-[var(--color-muted)]">
                 {earnedBadges.map((badge) => (
                   <div key={badge.id} className="flex items-center justify-between">
                     <span>{badge.name}</span>
-                    <span className="text-right tabular-nums">OK</span>
+                    <span className="text-right tabular-nums">✓</span>
                   </div>
                 ))}
               </div>
@@ -128,15 +163,28 @@ export default function ProgressPanel({ data, loading, error }) {
         </div>
       )}
       {showVictory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="victory-title"
+          aria-describedby="victory-desc"
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              localStorage.setItem('victoryDismissed', '1');
+              setShowVictory(false);
+            }
+          }}
+        >
           <div className="w-full max-w-lg rounded-[var(--radius-lg)] border border-[var(--color-gold)] bg-[var(--color-panel)] p-6 text-[var(--color-text)]">
-            <h3 className="text-xl font-heading">Victoire</h3>
-            <p className="mt-2 text-sm text-[var(--color-muted)]">
-              Tu as termine Valorith Idle. Le badge final est debloque.
+            <h3 id="victory-title" className="text-xl font-heading">Victoire</h3>
+            <p id="victory-desc" className="mt-2 text-sm text-[var(--color-muted)]">
+              Tu as terminé Valorith Idle. Le badge final est débloqué.
             </p>
             <div className="mt-4 flex justify-end">
               <button
                 className="rounded-[var(--radius-md)] bg-[var(--color-gold)] px-4 py-2 text-sm font-semibold text-black"
+                ref={victoryButtonRef}
                 onClick={() => {
                   localStorage.setItem('victoryDismissed', '1');
                   setShowVictory(false);

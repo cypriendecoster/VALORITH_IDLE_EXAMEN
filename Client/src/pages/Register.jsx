@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth.js';
-import { getMe } from '../services/userService.js';
 import { Link, useNavigate } from 'react-router-dom';
 import FormAlert from '../components/forms/FormAlert.jsx';
 import FormField from '../components/forms/FormField.jsx';
@@ -8,6 +6,7 @@ import PasswordField from '../components/forms/PasswordField.jsx';
 import PasswordStrength from '../components/forms/PasswordStrength.jsx';
 import useRegisterForm from '../hooks/useRegisterForm.js';
 import { MailIcon, UserIcon } from '../components/forms/icons.jsx';
+import { useRedirectIfAuthenticated } from '../hooks/useRedirectIfAuthenticated.js';
 
 export default function Register() {
   const { handleRegister, loading, error } = useAuth();
@@ -36,25 +35,10 @@ export default function Register() {
     onSuccess: () => navigate('/game'),
   });
 
-  useEffect(() => {
-    async function verifyToken() {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      if (!token) {
-        return;
-      }
-      try {
-        await getMe();
-        navigate('/game', { replace: true });
-      } catch (err) {
-        localStorage.removeItem('token');
-        sessionStorage.removeItem('token');
-      }
-    }
-    verifyToken();
-  }, [navigate]);
+  useRedirectIfAuthenticated('/game');
 
   return (
-    <div className="relative min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex items-center justify-center overflow-hidden">
+    <div className="relative min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex items-center justify-center overflow-y-auto">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-32 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(246,213,94,0.25),rgba(246,213,94,0))] blur-2xl" />
         <div className="absolute -bottom-24 right-12 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(148,163,184,0.2),rgba(148,163,184,0))] blur-3xl" />
@@ -122,6 +106,7 @@ export default function Register() {
               inputRef={fieldRefs.password}
               showPassword={showPassword}
               onTogglePassword={() => setShowPassword((value) => !value)}
+              describedBy="register-password-requirements"
             />
             {capsLockOn && (
               <p className="mt-2 text-xs text-[var(--color-gold-strong)]">
@@ -133,8 +118,11 @@ export default function Register() {
               label={strengthLabel}
               color={strengthColor}
             />
-            <p className="mt-2 text-xs text-[var(--color-muted)]">
-              8 caracteres minimum, avec une majuscule, une minuscule et un chiffre.
+            <p
+              id="register-password-requirements"
+              className="mt-2 text-xs text-[var(--color-muted)]"
+            >
+              8 caractères minimum, avec une majuscule, une minuscule et un chiffre.
             </p>
           </div>
           <div className="space-y-2">
@@ -182,11 +170,11 @@ export default function Register() {
                 Chargement...
               </span>
             ) : (
-              'Creer un compte'
+              'Créer un compte'
             )}
           </button>
           <p className="text-center text-sm text-[var(--color-muted)]">
-            Deja un compte ?{' '}
+            Déjà un compte ?{' '}
             <Link
               to="/login"
               className="font-semibold text-[var(--color-gold)] hover:underline"

@@ -22,9 +22,11 @@ export default function PasswordField({
   onTogglePassword,
   showToggle = true,
   checkClassName = 'right-12',
+  describedBy,
 }) {
   const showError = touched && Boolean(error);
   const errorId = showError ? `${id}-error` : undefined;
+  const describedById = [errorId, describedBy].filter(Boolean).join(' ') || undefined;
 
   return (
     <div className="space-y-2">
@@ -52,7 +54,7 @@ export default function PasswordField({
           minLength={minLength}
           ref={inputRef}
           aria-invalid={touched && Boolean(error)}
-          aria-describedby={errorId}
+          aria-describedby={describedById}
         />
         {showCheck && (
           <span
