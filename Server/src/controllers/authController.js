@@ -15,12 +15,42 @@ import {
   markPasswordResetTokenUsed
 } from '../models/passwordResetTokenModel.js';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+function isPasswordValid(password) {
+  return PASSWORD_REGEX.test(password);
+}
+
+function isEmailValid(email) {
+  return EMAIL_REGEX.test(email);
+}
+
+function isUsernameValid(username) {
+  return USERNAME_REGEX.test(username);
+}
+
 export async function registerController(req, res) {
   try {
     const { email, username, password } = req.body;
 
     if (!email || !username || !password) {
       return res.status(400).json({ message: 'Missing fields' });
+    }
+
+    if (!isEmailValid(email)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
+
+    if (!isUsernameValid(username)) {
+      return res.status(400).json({ message: 'Invalid username format' });
+    }
+
+    if (!isPasswordValid(password)) {
+      return res.status(400).json({
+        message: 'Password must be at least 8 characters with upper, lower, and number.'
+      });
     }
 
     const existingEmail = await findByEmail(email);
@@ -68,12 +98,12 @@ export async function loginController(req, res) {
 
     const user = await findByEmail(email);
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Account not found' });
     }
 
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Incorrect password' });
     }
 
     await updateLastLogin(user.id);
@@ -115,13 +145,12 @@ export async function requestPasswordResetController(req, res) {
       });
 
       return res.status(200).json({
-        message: 'If the account exists, a reset token has been issued.',
-        token
+        message: "Si le compte existe, un lien de réinitialisation a été envoyé."
       });
     }
 
     return res.status(200).json({
-      message: 'If the account exists, a reset token has been issued.'
+      message: "Si le compte existe, un lien de réinitialisation a été envoyé."
     });
   } catch (error) {
     console.error(error);
@@ -136,6 +165,12 @@ export async function resetPasswordController(req, res) {
     const { token, password } = req.body;
     if (!token || !password) {
       return res.status(400).json({ message: 'Missing fields' });
+    }
+
+    if (!isPasswordValid(password)) {
+      return res.status(400).json({
+        message: 'Password must be at least 8 characters with upper, lower, and number.'
+      });
     }
 
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');

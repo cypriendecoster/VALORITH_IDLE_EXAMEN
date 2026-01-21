@@ -4,6 +4,7 @@ import cors from 'cors';
 
 import authRoutes from './src/routes/auth.routes.js';
 import userRoutes from './src/routes/user.routes.js';
+import { rateLimit } from './src/middlewares/rateLimit.js';
 
 import realmRoutes from './src/routes/realm.routes.js';
 import realmUnlockCostRoutes from './src/routes/realmUnlockCost.routes.js';
@@ -14,6 +15,7 @@ import endgameRequirementRoutes from './src/routes/endgameRequirement.routes.js'
 import badgeRoutes from './src/routes/badge.routes.js';
 import rankingRoutes from './src/routes/ranking.routes.js';
 import adminRoutes from './src/routes/admin.routes.js';
+import supportTicketRoutes from './src/routes/supportTicket.routes.js';
 
 import playerResourceRoutes from './src/routes/playerResource.routes.js';
 import playerFactoryRoutes from './src/routes/playerFactory.routes.js';
@@ -39,7 +41,7 @@ app.get('/', (req, res) => {
   return res.json({ status: 'ok' });
 });
 
-app.use('/auth', authRoutes);
+app.use('/auth', rateLimit({ windowMs: 60000, max: 8, keyPrefix: 'auth' }), authRoutes);
 app.use('/users', userRoutes);
 
 app.use('/realms', realmRoutes);
@@ -51,6 +53,7 @@ app.use('/endgame-requirements', endgameRequirementRoutes);
 app.use('/badges', badgeRoutes);
 app.use('/rankings', rankingRoutes);
 app.use('/admin', adminRoutes);
+app.use('/support-tickets', supportTicketRoutes);
 
 app.use('/player/resources', playerResourceRoutes);
 app.use('/player/factories', playerFactoryRoutes);

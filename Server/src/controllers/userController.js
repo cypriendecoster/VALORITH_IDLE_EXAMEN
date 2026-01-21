@@ -15,6 +15,7 @@ export async function meController(req, res) {
       email: user?.email || null,
       username: user?.username || null,
       role: user?.role || req.user.role || null,
+      last_login_at: user?.last_login_at || null,
       stats
     });
   } catch (error) {
