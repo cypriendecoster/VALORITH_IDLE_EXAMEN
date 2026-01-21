@@ -2,12 +2,13 @@ import { Link } from 'react-router-dom';
 
 export default function Home() {
     return (
-        <main className="relative min-h-screen text-[var(--color-text)]">
+        <main id="top" className="relative min-h-screen text-[var(--color-text)]">
             {/* Background global */}
             <div className="pointer-events-none fixed inset-0 -z-10">
                 <img
                     src="/HERO_HEADER/HERO_HEADER_ACCUEIL_2.png"
-                    alt="Valorith"
+                    alt=""
+                    aria-hidden="true"
                     className="h-full w-full object-cover"
                 />
                 <div className="absolute inset-0 bg-black/35"></div>
@@ -15,18 +16,18 @@ export default function Home() {
             </div>
 
             {/* Hero */}
-            <section className="mx-auto max-w-6xl px-6 pt-8 pb-14 lg:pt-12 lg:pb-20">
+            <section className="mx-auto max-w-6xl px-4 pt-8 pb-14 sm:px-6 lg:pt-12 lg:pb-20">
                 <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
                     <div>
                         <p className="text-xs tracking-[0.2em] text-[var(--color-gold)]">
-                            IDLE FORGE - ROYAUMES A DEBLOQUER
+                            IDLE FORGE - ROYAUMES À DÉBLOQUER
                         </p>
                         <h1 className="mt-4 text-4xl font-heading md:text-6xl">
                             VALORITH <span className="text-[var(--color-gold)]">FORGE</span> IDLE
                         </h1>
                         <p className="mt-5 text-lg text-[var(--color-muted)]">
-                            Batis ton empire d'usines, optimise tes chaines de production et laisse
-                            la forge travailler pendant que tu es hors-ligne.
+                            Bâtis ton empire d'usines, optimise tes chaînes de production et laisse
+                            la forge travailler pendant que tu es hors ligne.
                         </p>
 
                         <div className="mt-7 flex flex-wrap gap-4">
@@ -40,34 +41,64 @@ export default function Home() {
                                 to="/register"
                                 className="rounded-[var(--radius-md)] border border-[var(--color-border)] px-6 py-3 text-[var(--color-text)]"
                             >
-                                Creer un compte
+                                Créer un compte
+                            </Link>
+                            <Link
+                                to="/tutorial"
+                                className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 px-6 py-3 text-[var(--color-text)]"
+                            >
+                                Découvrir le jeu
                             </Link>
                         </div>
 
                         <div className="mt-6 flex flex-wrap gap-3 text-xs text-[var(--color-muted)]">
-                            <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
+                            <span className="rounded-full border border-[var(--color-gold)]/40 bg-black/30 px-3 py-1 text-[var(--color-gold)]">
                                 Progression longue
                             </span>
-                            <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
-                                Sans microtransactions
-                            </span>
-                            <span className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1">
+                            <span className="rounded-full border border-[var(--color-gold)]/40 bg-black/30 px-3 py-1 text-[var(--color-gold)]">
                                 Idle rewards
                             </span>
                         </div>
+
+                        <nav className="mt-6 flex flex-wrap gap-3 text-xs text-[var(--color-muted)]">
+                            <a
+                                href="#presentation"
+                                className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1 hover:text-[var(--color-text)]"
+                            >
+                                Présentation
+                            </a>
+                            <a
+                                href="#boucle"
+                                className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1 hover:text-[var(--color-text)]"
+                            >
+                                Comment ça marche
+                            </a>
+                            <a
+                                href="#fonctionnalites"
+                                className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1 hover:text-[var(--color-text)]"
+                            >
+                                Fonctionnalités
+                            </a>
+                            <a
+                                href="#apercu"
+                                className="rounded-full border border-[var(--color-border)] bg-black/40 px-3 py-1 hover:text-[var(--color-text)]"
+                            >
+                                Aperçu
+                            </a>
+                        </nav>
                     </div>
 
                     <div className="relative">
                         <div className="absolute -inset-3 rounded-[var(--radius-lg)] bg-[var(--color-gold)]/10 blur-2xl"></div>
                         <div className="relative rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/80 p-4">
                             <div className="flex items-center justify-between text-xs text-[var(--color-muted)]">
-                                <span className="font-heading text-[var(--color-text)]">Apercu du royaume</span>
+                                <span className="font-heading text-[var(--color-text)]">Aperçu du royaume</span>
                                 <span>Forge active</span>
                             </div>
                             <div className="mt-3 h-48 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/50 p-2">
                                 <img
-                                    src="/MOCKUP/mockup.png"
-                                    alt="Apercu complet"
+                                    src="/MOCKUP/MOCKUP_IMAGE.png"
+                                    alt="Aperçu complet"
                                     className="h-full w-full rounded-[var(--radius-md)] object-cover"
                                 />
                             </div>
@@ -79,7 +110,7 @@ export default function Home() {
                                     +2h idle
                                 </div>
                                 <div className="rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-black/40 px-2 py-1 text-center">
-                                    x2 bonus
+                                    Skills passifs
                                 </div>
                             </div>
                         </div>
@@ -87,39 +118,39 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Presentation */}
-            <section className="mx-auto max-w-6xl px-6 pb-4">
+            {/* Présentation */}
+            <section id="presentation" className="mx-auto max-w-6xl px-4 pb-4 sm:px-6">
                 <div className="grid gap-6 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-6 lg:grid-cols-[1.2fr_0.8fr] lg:p-8">
                     <div>
-                        <p className="text-xs tracking-[0.2em] text-[var(--color-gold)]">PRESENTATION</p>
+                        <p className="text-xs tracking-[0.2em] text-[var(--color-gold)]">PRÉSENTATION</p>
                         <h2 className="mt-3 text-3xl font-heading">Une forge vivante</h2>
                         <p className="mt-3 text-[var(--color-muted)]">
                             Chaque royaume apporte des ressources et des synergies. Tu choisis ton
-                            rythme, tu optimises tes usines, tu recoltes des bonus durables.
+                            rythme, tu optimises tes usines, tu récoltes des bonus durables.
                         </p>
                     </div>
                     <div className="grid gap-3 text-sm text-[var(--color-muted)]">
                         <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 px-4 py-3">
-                            Synergies entre royaumes pour booster la production.
+                            Bonus et boosts locaux pour chaque royaume.
                         </div>
                         <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 px-4 py-3">
-                            Skills progressifs pour specialiser ta strategie.
+                            Skills progressifs pour spécialiser ta stratégie.
                         </div>
                         <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 px-4 py-3">
-                            Un objectif final: debloquer le badge ultime.
+                            Un objectif final : débloquer le badge ultime.
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Comment ca marche */}
-            <section className="mx-auto max-w-6xl px-6 py-12">
+            {/* Comment ça marche */}
+            <section id="boucle" className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
                 <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
                     <div>
-                        <p className="text-xs tracking-[0.2em] text-[var(--color-gold)]">COMMENT CA MARCHE</p>
+                        <p className="text-xs tracking-[0.2em] text-[var(--color-gold)]">COMMENT ÇA MARCHE</p>
                         <h2 className="mt-3 text-3xl font-heading">Ta boucle de progression</h2>
                         <p className="mt-3 text-[var(--color-muted)]">
-                            Simple a apprendre, profonde a maitriser. Trois etapes, un rythme
+                            Simple à apprendre, profonde à maîtriser. Trois étapes, un rythme
                             satisfaisant.
                         </p>
                     </div>
@@ -129,13 +160,13 @@ export default function Home() {
                     {[
                         [
                             '01',
-                            'Debloque un royaume',
-                            'Des ressources uniques, des bonus croises et de nouvelles usines.'
+                            'Débloque un royaume',
+                            'Des ressources uniques, des bonus locaux et de nouvelles usines.'
                         ],
                         [
                             '02',
                             'Optimise tes usines',
-                            'Investis, ameliore, puis maximise ta production.'
+                            'Investis, améliore, puis maximise ta production.'
                         ],
                         [
                             '03',
@@ -155,14 +186,14 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Fonctionnalites */}
-            <section className="mx-auto max-w-6xl px-6 py-12">
+            {/* Fonctionnalités */}
+            <section id="fonctionnalites" className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
                 <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <p className="text-xs tracking-[0.2em] text-[var(--color-gold)]">FONCTIONNALITES</p>
+                        <p className="text-xs tracking-[0.2em] text-[var(--color-gold)]">FONCTIONNALITÉS</p>
                         <h2 className="mt-3 text-3xl font-heading">Tout pour garder l'envie</h2>
                         <p className="mt-3 text-[var(--color-muted)]">
-                            Des objectifs clairs, des recompenses tangibles, et une progression
+                            Des objectifs clairs, des récompenses tangibles, et une progression
                             toujours visible.
                         </p>
                     </div>
@@ -170,10 +201,10 @@ export default function Home() {
 
                 <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                     {[
-                        ['Royaumes a debloquer', 'Decouvre de nouvelles ressources a chaque monde.'],
-                        ['Usines & Skills', 'Combine usines et competences pour booster la prod.'],
-                        ['Idle gains', 'La forge continue meme hors-ligne.'],
-                        ['Badge final', 'Un bonus permanent apres les 12 royaumes.']
+                        ['Royaumes à débloquer', 'Découvre de nouvelles ressources à chaque monde.'],
+                        ['Usines & Skills', 'Combine usines et compétences pour booster la prod.'],
+                        ['Idle gains', 'La forge continue même hors ligne.'],
+                        ['Badge final', 'Un bonus permanent après les 12 royaumes.']
                     ].map(([title, desc]) => (
                         <div
                             key={title}
@@ -186,14 +217,14 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Apercu */}
-            <section className="mx-auto max-w-6xl px-6 pb-14">
+            {/* Aperçu */}
+            <section id="apercu" className="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
                 <div className="grid gap-6 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-6 lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
                     <div>
-                        <p className="text-xs tracking-[0.2em] text-[var(--color-gold)]">APERCU</p>
-                        <h2 className="mt-3 text-3xl font-heading">Un monde qui evolue</h2>
+                        <p className="text-xs tracking-[0.2em] text-[var(--color-gold)]">APERÇU</p>
+                        <h2 className="mt-3 text-3xl font-heading">Un monde qui évolue</h2>
                         <p className="mt-3 text-[var(--color-muted)]">
-                            Lance une partie, observe ta progression, et reviens pour declencher des
+                            Lance une partie, observe ta progression, et reviens pour déclencher des
                             boosts majeurs.
                         </p>
                         <div className="mt-5 space-y-3 text-sm text-[var(--color-muted)]">
@@ -201,7 +232,7 @@ export default function Home() {
                                 Ressources uniques par royaume.
                             </div>
                             <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 px-4 py-3">
-                                Usines specialisees et upgrades visibles.
+                                Usines spécialisées et upgrades visibles.
                             </div>
                             <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 px-4 py-3">
                                 Objectifs clairs jusqu'au badge final.
@@ -210,8 +241,8 @@ export default function Home() {
                     </div>
                     <div className="max-h-[360px] rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-black/50 p-2">
                         <img
-                            src="/GAMECAPTURE/Royaume_ressource.png"
-                            alt="Apercu royaume"
+                            src="/MOCKUP/MOCKUP_2.png"
+                            alt="Aperçu royaume"
                             className="h-full w-full rounded-[var(--radius-md)] object-cover"
                         />
                     </div>

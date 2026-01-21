@@ -98,7 +98,7 @@ export default function GamePage() {
         <div className="absolute inset-0 bg-black/45"></div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-6 py-10">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <h1 className="text-3xl font-heading">{activeRealmName} - Forge Active</h1>
         <p className="mt-2 text-[var(--color-muted)]">
           Game UI (UX). Data wiring comes next.
@@ -113,6 +113,7 @@ export default function GamePage() {
                   localStorage.setItem('hideOnboarding', '1');
                   setShowOnboarding(false);
                 }}
+                aria-label="Fermer l'encart de bienvenue"
               >
                 Fermer
               </button>
@@ -124,25 +125,48 @@ export default function GamePage() {
           </div>
         )}
         {actionError && (
-          <div className="mt-3 rounded-[var(--radius-md)] border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
-            {actionError}
+          <div
+            className="mt-3 flex items-center gap-2 rounded-[var(--radius-md)] border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200"
+            aria-live="polite"
+          >
+            <span className="text-base" aria-hidden="true">
+              !
+            </span>
+            <span>{actionError}</span>
           </div>
         )}
         {notice && (
-          <div className="mt-3 flex items-center justify-between rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 px-3 py-2 text-sm text-[var(--color-text)]">
-            <span>{notice}</span>
+          <div
+            className="mt-3 flex items-center justify-between gap-3 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 px-3 py-2 text-sm text-[var(--color-text)]"
+            aria-live="polite"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-base" aria-hidden="true">
+                i
+              </span>
+              <span>{notice}</span>
+            </div>
             <button
               className="rounded-[var(--radius-sm)] border border-[var(--color-border)] px-2 py-1 text-xs text-[var(--color-muted)]"
               onClick={() => setNotice('')}
+              aria-label="Fermer la notification"
             >
               Fermer
             </button>
           </div>
         )}
         {idleSummary && idleSummary.signature !== dismissedIdleSignature && (
-          <div className="mt-3 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 px-3 py-2 text-sm text-[var(--color-muted)]">
-            <div className="flex items-center justify-between">
-              <span>Hors ligne: +{Math.floor(idleSummary.seconds)}s</span>
+          <div
+            className="mt-3 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 px-3 py-2 text-sm text-[var(--color-muted)]"
+            aria-live="polite"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-[var(--color-text)]">
+                <span className="text-base" aria-hidden="true">
+                  i
+                </span>
+                <span>Hors ligne: +{Math.floor(idleSummary.seconds)}s</span>
+              </div>
               <button
                 className="rounded-[var(--radius-sm)] border border-[var(--color-border)] px-2 py-1 text-xs text-[var(--color-muted)]"
                 onClick={() => {
@@ -152,6 +176,7 @@ export default function GamePage() {
                   }
                   setIdleSummary(null);
                 }}
+                aria-label="Fermer le resume hors ligne"
               >
                 Fermer
               </button>
@@ -189,7 +214,7 @@ export default function GamePage() {
         <ResourcesPanel data={data} loading={loading} error={error} />
         <ProgressPanel data={data} loading={loading} error={error} />
 
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
+        <div className="mt-6 grid gap-4 sm:gap-6 md:grid-cols-2">
           <FactoryPanel data={data} loading={loading} error={error} onUpgrade={handleUpgrade} />
           <SkillPanel data={data} loading={loading} error={error} onUpgrade={handleSkillUpgrade} />
         </div>

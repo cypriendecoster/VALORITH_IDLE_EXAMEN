@@ -19,8 +19,9 @@ export function useAuth() {
             window.dispatchEvent(new Event('auth-changed'));
             return result;
         } catch (error) {
-            setError(error.message);
-            throw error;
+            const message = 'Identifiants invalides.';
+            setError(message);
+            throw new Error(message);
         } finally {
             setLoading(false);
         }

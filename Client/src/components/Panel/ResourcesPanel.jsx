@@ -11,7 +11,7 @@ export default function ResourcesPanel({ data, loading, error }) {
   );
 
   return (
-    <section className="mt-6 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-5">
+    <section className="mt-6 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-4 sm:p-5">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-xl">Ressources</h2>
         <div className="flex items-center gap-3 text-xs text-[var(--color-muted)]">
@@ -20,14 +20,22 @@ export default function ResourcesPanel({ data, loading, error }) {
         </div>
       </div>
 
-      {loading && <p className="mt-3 text-sm text-[var(--color-muted)]">Chargement...</p>}
-      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+      {loading && (
+        <p className="mt-3 text-sm text-[var(--color-muted)]" aria-live="polite">
+          Chargement...
+        </p>
+      )}
+      {error && (
+        <p className="mt-3 text-sm text-red-400" aria-live="polite">
+          {error}
+        </p>
+      )}
 
       {!loading && !error && data && (
-        <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="mt-4 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {data.resources.map((res) => {
             const playerRes = data.player.resources.find((r) => r.resource_id === res.id);
-            const amount = playerRes ? playerRes.amount : 0;
+            const amount = playerRes ? Number(playerRes.amount) : 0;
 
             return (
               <div
@@ -35,7 +43,9 @@ export default function ResourcesPanel({ data, loading, error }) {
                 className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 p-3 text-center"
               >
                 <p className="text-sm font-heading">{res.name}</p>
-                <p className="mt-1 text-xs text-[var(--color-muted)]">{amount}</p>
+                <p className="mt-1 text-xs text-[var(--color-muted)]">
+                  {amount > 0 ? Math.floor(amount) : '0'}
+                </p>
               </div>
             );
           })}

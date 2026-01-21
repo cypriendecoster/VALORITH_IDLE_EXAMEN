@@ -28,8 +28,16 @@ export default function FactoryPanel({ data, loading, error, onUpgrade }) {
         Royaume actif: {activeRealmName}
       </p>
 
-      {loading && <p className="mt-3 text-sm text-[var(--color-muted)]">Chargement...</p>}
-      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+      {loading && (
+        <p className="mt-3 text-sm text-[var(--color-muted)]" aria-live="polite">
+          Chargement...
+        </p>
+      )}
+      {error && (
+        <p className="mt-3 text-sm text-red-400" aria-live="polite">
+          {error}
+        </p>
+      )}
 
       {!loading && !error && data && !isActiveUnlocked && activeRealmId && (
         <p className="mt-3 text-sm text-[var(--color-muted)]">
@@ -38,7 +46,7 @@ export default function FactoryPanel({ data, loading, error, onUpgrade }) {
       )}
 
       {!loading && !error && data && isActiveUnlocked && (
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {visibleFactories.map((f) => {
             const playerRes = data.player.resources.find((r) => r.resource_id === f.resource_id);
             const amount = playerRes ? Number(playerRes.amount) + Number(playerRes.amount_carry) : 0;
@@ -57,13 +65,13 @@ export default function FactoryPanel({ data, loading, error, onUpgrade }) {
             return (
               <div
                 key={f.id}
-                className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 p-4"
+                className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 p-4"
               >
                 <div className="flex items-center justify-between">
                   <p className="font-heading">{f.name}</p>
                   {!isUnlocked && <span className="text-xs text-[var(--color-gold)]">LOCK</span>}
                 </div>
-                <p className="mt-1 text-xs text-[var(--color-muted)]">{f.description}</p>
+                <p className="text-xs text-[var(--color-muted)]">{f.description}</p>
                 <p className="text-xs text-[var(--color-muted)]">
                   Prod: {isUnlocked ? f.production : 0} {costResourceName}/s
                 </p>
@@ -75,7 +83,12 @@ export default function FactoryPanel({ data, loading, error, onUpgrade }) {
                 <p className="text-xs text-[var(--color-muted)]">
                   Cout: {f.cost} {costResourceName}
                 </p>
-                <p className="text-xs text-[var(--color-muted)]">Niveau: {f.level}</p>
+                {!canAfford && (
+                  <p className="text-xs text-red-300">Ressources insuffisantes.</p>
+                )}
+                <span className="inline-flex w-fit rounded-full border border-[var(--color-border)] bg-black/30 px-2 py-0.5 text-[10px] text-[var(--color-muted)]">
+                  Niveau {f.level}
+                </span>
 
                 <button
                   className="mt-2 w-full rounded-[var(--radius-md)] bg-[var(--color-gold)] px-3 py-2 text-sm font-semibold text-black disabled:opacity-40"

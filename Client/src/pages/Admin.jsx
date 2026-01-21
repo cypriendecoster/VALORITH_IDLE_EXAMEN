@@ -100,6 +100,10 @@ export default function Admin() {
 
   async function onDelete(rowId) {
     try {
+      const confirmed = window.confirm('Supprimer cette ligne ?');
+      if (!confirmed) {
+        return;
+      }
       setError('');
       await deleteAdminRow(selectedTable, rowId);
       const rowData = await listAdminRows(selectedTable, 50, 0);
@@ -120,17 +124,25 @@ export default function Admin() {
         <div className="absolute inset-0 bg-black/45"></div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-6 py-10">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <h1 className="text-3xl font-heading">Admin</h1>
         <p className="mt-2 text-[var(--color-muted)]">
           Gestion complete des tables.
         </p>
 
-        {loading && <p className="mt-3 text-sm text-[var(--color-muted)]">Chargement...</p>}
-        {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+        {loading && (
+          <p className="mt-3 text-sm text-[var(--color-muted)]" aria-live="polite">
+            Chargement...
+          </p>
+        )}
+        {error && (
+          <p className="mt-3 text-sm text-red-400" aria-live="polite">
+            {error}
+          </p>
+        )}
 
         {!loading && (
-          <div className="mt-6 grid gap-6 md:grid-cols-3">
+          <div className="mt-6 grid gap-4 sm:gap-6 md:grid-cols-3">
             <section className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-4">
               <h2 className="text-sm font-heading">Tables</h2>
               <div className="mt-3 grid gap-2 text-sm text-[var(--color-muted)]">

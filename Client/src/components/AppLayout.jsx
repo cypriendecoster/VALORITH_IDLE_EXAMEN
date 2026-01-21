@@ -1,4 +1,5 @@
-import { Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useMe } from '../hooks/useMe.js';
 import Navbar from './NavBar.jsx';
 import PlayerNavbar from './PlayerNavbar.jsx';
@@ -23,12 +24,14 @@ function getTotalResources(data) {
 export default function AppLayout() {
   const { data, loading, error } = useMe();
   const role = data?.role || null;
+  const navigate = useNavigate();
+  const location = useLocation();
 
   function handleLogout() {
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
     window.dispatchEvent(new Event('auth-changed'));
-    window.location.href = '/';
+    navigate('/');
   }
 
   let navbar = <Navbar />;
@@ -45,6 +48,10 @@ export default function AppLayout() {
     );
   }
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }, [location.pathname]);
+
   return (
     <>
       <a
@@ -55,7 +62,9 @@ export default function AppLayout() {
       </a>
       {navbar}
       <div id="top">
-        <Outlet />
+        <div id="main-content">
+          <Outlet />
+        </div>
       </div>
       <Footer />
     </>

@@ -61,7 +61,7 @@ export default function Login() {
 
     setValidationError('');
     try {
-      await handleLogin(form, { remember: rememberMe });
+      await handleLogin({ email, password }, { remember: rememberMe });
       navigate('/game');
     } catch (err) {
       setValidationError('Identifiants invalides.');
@@ -78,32 +78,66 @@ export default function Login() {
         />
         <h1 className="text-2xl font-heading text-center mb-6">Connexion</h1>
 
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div>
+        <form onSubmit={onSubmit} className="space-y-5">
+          <div className="space-y-2">
             <label className="text-xs font-semibold text-[var(--color-muted)]" htmlFor="login-email">
               Email
             </label>
-            <input
-              id="login-email"
-              className="input-base w-full bg-black/40 text-[var(--color-text)] placeholder:text-[var(--color-muted)] transition focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/60 hover:border-[var(--color-gold)]/40 disabled:cursor-not-allowed disabled:opacity-60"
-              type="email"
-              autoComplete="email"
-              name="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={onChange}
-              disabled={loading}
-              required
-            />
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]">
+                <svg
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="m3 7 9 6 9-6" />
+                </svg>
+              </span>
+              <input
+                id="login-email"
+                className="input-base w-full bg-black/40 !pl-10 text-[var(--color-text)] placeholder:text-[var(--color-muted)] transition focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/60 hover:border-[var(--color-gold)]/40 disabled:cursor-not-allowed disabled:opacity-60"
+                type="email"
+                autoComplete="email"
+                name="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={onChange}
+                disabled={loading}
+                required
+                aria-invalid={Boolean(validationError || error)}
+                aria-describedby={validationError || error ? 'login-error' : undefined}
+              />
+            </div>
           </div>
-          <div>
+          <div className="space-y-2">
             <label className="text-xs font-semibold text-[var(--color-muted)]" htmlFor="login-password">
               Mot de passe
             </label>
             <div className="relative">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]">
+                <svg
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="11" width="18" height="10" rx="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </span>
               <input
                 id="login-password"
-                className="input-base w-full bg-black/40 text-[var(--color-text)] placeholder:text-[var(--color-muted)] pr-12 transition focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/60 hover:border-[var(--color-gold)]/40 disabled:cursor-not-allowed disabled:opacity-60"
+                className="input-base w-full bg-black/40 !pl-10 pr-12 text-[var(--color-text)] placeholder:text-[var(--color-muted)] transition focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/60 hover:border-[var(--color-gold)]/40 disabled:cursor-not-allowed disabled:opacity-60"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
                 name="password"
@@ -114,16 +148,49 @@ export default function Login() {
                 onKeyDown={onPasswordKey}
                 disabled={loading}
                 required
-                minLength={6}
+                minLength={8}
+                aria-invalid={Boolean(validationError || error)}
+                aria-describedby={validationError || error ? 'login-error' : undefined}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((value) => !value)}
                 disabled={loading}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-[var(--color-border)] bg-black/40 px-2 py-1 text-[10px] text-[var(--color-text)] hover:border-[var(--color-gold)]/50 hover:text-[var(--color-gold)] disabled:cursor-not-allowed disabled:opacity-60"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-[var(--color-border)] bg-black/40 p-1.5 text-[var(--color-text)] hover:border-[var(--color-gold)]/50 hover:text-[var(--color-gold)] disabled:cursor-not-allowed disabled:opacity-60"
                 aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                title={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
               >
-                {showPassword ? 'Masquer' : 'Afficher'}
+                {showPassword ? (
+                  <svg
+                    aria-hidden="true"
+                    className="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3 3l18 18" />
+                    <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83" />
+                    <path d="M9.88 4.24A10.52 10.52 0 0 1 12 4c7 0 10 8 10 8a18.7 18.7 0 0 1-3.41 4.86" />
+                    <path d="M6.23 6.23A18.7 18.7 0 0 0 2 12s3 8 10 8a10.52 10.52 0 0 0 4.38-.94" />
+                  </svg>
+                ) : (
+                  <svg
+                    aria-hidden="true"
+                    className="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
               </button>
             </div>
             {capsLockOn && (
@@ -159,17 +226,15 @@ export default function Login() {
             Se souvenir de moi
           </label>
           {(validationError || error) && (
-            <div className="mt-2 space-y-2">
-              {validationError && (
-                <p className="rounded-[var(--radius-sm)] border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
-                  {validationError}
-                </p>
-              )}
-              {error && (
-                <p className="rounded-[var(--radius-sm)] border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
-                  {error}
-                </p>
-              )}
+            <div className="mt-2">
+              <p
+                className="rounded-[var(--radius-sm)] border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200"
+                role="alert"
+                aria-live="assertive"
+                id="login-error"
+              >
+                {error || validationError}
+              </p>
             </div>
           )}
           <button
@@ -192,7 +257,7 @@ export default function Login() {
         </form>
         <div className="mt-6 space-y-3 border-t border-[var(--color-border)] pt-4 text-center">
           <Link className="text-xs text-[var(--color-muted)] hover:text-[var(--color-text)]" to="/forgot-password">
-            Mot de passe oublie ?
+            Mot de passe oublié ?
           </Link>
           <p className="text-xs text-[var(--color-muted)]">
             Pas encore de compte ?{' '}

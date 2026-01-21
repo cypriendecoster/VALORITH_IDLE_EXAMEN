@@ -43,6 +43,22 @@
   box-shadow: var(--glow-gold);
 }
 
+.input-base:focus-visible {
+  border-color: var(--color-gold-strong);
+  box-shadow: 0 0 0 3px rgba(201, 164, 78, 0.35);
+}
+
+.input-base:-webkit-autofill,
+.input-base:-webkit-autofill:hover,
+.input-base:-webkit-autofill:focus,
+.input-base:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--color-text);
+  -webkit-box-shadow: 0 0 0 1000px var(--color-panel) inset;
+  box-shadow: 0 0 0 1000px var(--color-panel) inset;
+  border-color: var(--color-border);
+  caret-color: var(--color-text);
+}
+
 
 body {
   font-family: var(--font-body);

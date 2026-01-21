@@ -5,7 +5,7 @@ export default function Footer() {
 
   return (
     <footer className="mt-16 border-t border-[var(--color-border)] bg-black/40 text-[var(--color-text)]">
-      <div className="mx-auto grid max-w-6xl gap-8 px-6 py-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
         <div aria-labelledby="footer-brand">
           <h2 id="footer-brand" className="sr-only">
             Marque
@@ -110,8 +110,8 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-[var(--color-border)]">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-4 text-xs text-[var(--color-muted)] sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-[var(--color-border)] bg-black/30">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-4 text-xs text-[var(--color-muted)] opacity-85 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <span>(c) {year} Valorith Forge Idle. Tous droits reserves.</span>
           <a href="#top" className="hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60">
             Retour en haut

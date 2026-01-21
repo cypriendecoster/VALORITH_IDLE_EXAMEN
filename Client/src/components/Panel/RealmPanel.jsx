@@ -19,15 +19,25 @@
   );
 
   return (
-    <section className="mt-8 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-5">
+    <section className="mt-8 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-4 sm:p-5">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-xl">Royaumes</h2>
-        <span className="text-xs text-[var(--color-muted)]">0 / 12</span>
+        <span className="text-xs text-[var(--color-muted)]">
+          {unlockedIds.size} / {realms?.length || 0}
+        </span>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {loading && <p className="text-sm text-[var(--color-muted)]">Chargement...</p>}
-        {error && <p className="text-sm text-red-400">{error}</p>}
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {loading && (
+          <p className="text-sm text-[var(--color-muted)]" aria-live="polite">
+            Chargement...
+          </p>
+        )}
+        {error && (
+          <p className="text-sm text-red-400" aria-live="polite">
+            {error}
+          </p>
+        )}
 
         {!loading && !error && realms && (
           <>
@@ -41,7 +51,9 @@
                     <span className="font-heading">{r.name}</span>
                     {!isUnlocked && <span className="text-xs text-[var(--color-gold)]">LOCK</span>}
                     {isUnlocked && isActive && (
-                      <span className="text-xs text-[var(--color-muted)]">ACTIF</span>
+                      <span className="rounded-full border border-[var(--color-gold)]/40 bg-black/30 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-[var(--color-gold)]">
+                        Actif
+                      </span>
                     )}
                   </div>
 

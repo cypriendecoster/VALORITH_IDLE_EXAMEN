@@ -7,14 +7,22 @@ export default function SkillPanel({ data, loading, error, onUpgrade }) {
   const isActiveUnlocked = activeRealmId ? unlockedRealmIds.has(activeRealmId) : false;
 
   return (
-    <section className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-5">
+    <section className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-4 sm:p-5">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-xl">Skills (Passifs)</h2>
         <span className="text-xs text-[var(--color-muted)]">{activeRealmName}</span>
       </div>
 
-      {loading && <p className="mt-3 text-sm text-[var(--color-muted)]">Chargement...</p>}
-      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+      {loading && (
+        <p className="mt-3 text-sm text-[var(--color-muted)]" aria-live="polite">
+          Chargement...
+        </p>
+      )}
+      {error && (
+        <p className="mt-3 text-sm text-red-400" aria-live="polite">
+          {error}
+        </p>
+      )}
 
       {!loading && !error && data && !isActiveUnlocked && activeRealmId && (
         <p className="mt-3 text-sm text-[var(--color-muted)]">
@@ -23,7 +31,7 @@ export default function SkillPanel({ data, loading, error, onUpgrade }) {
       )}
 
       {!loading && !error && data && isActiveUnlocked && (
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {data.skills
             .filter((s) => (activeRealmId ? s.realm_id === activeRealmId : true))
             .map((s) => {
@@ -43,19 +51,22 @@ export default function SkillPanel({ data, loading, error, onUpgrade }) {
               return (
                 <div
                   key={s.id}
-                  className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 p-4"
+                  className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-black/40 p-4"
                 >
                   <p className="font-heading">{s.name}</p>
-                  <p className="mt-1 text-xs text-[var(--color-muted)]">{s.description}</p>
+                  <p className="text-xs text-[var(--color-muted)]">{s.description}</p>
                   <p className="text-xs text-[var(--color-muted)]">
                     Effet: {s.effect_type} ({s.effect_value})
                   </p>
-                  <p className="text-xs text-[var(--color-muted)]">
-                    Niveau: {level} / {s.max_level}
-                  </p>
+                  <span className="inline-flex w-fit rounded-full border border-[var(--color-border)] bg-black/30 px-2 py-0.5 text-[10px] text-[var(--color-muted)]">
+                    Niveau {level} / {s.max_level}
+                  </span>
                   <p className="text-xs text-[var(--color-muted)]">
                     Cout: {cost} {costResourceName}
                   </p>
+                  {!canAfford && (
+                    <p className="text-xs text-red-300">Ressources insuffisantes.</p>
+                  )}
 
                   <button
                     className="mt-2 w-full rounded-[var(--radius-md)] bg-[var(--color-gold)] px-3 py-2 text-sm font-semibold text-black disabled:opacity-40"

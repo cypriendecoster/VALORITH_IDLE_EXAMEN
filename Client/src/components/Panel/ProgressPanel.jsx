@@ -4,6 +4,7 @@ export default function ProgressPanel({ data, loading, error }) {
   const totalRealms = data?.realms?.length || 0;
   const unlockedRealms = data?.player?.realms?.length || 0;
   const allRealmsUnlocked = totalRealms > 0 && unlockedRealms >= totalRealms;
+  const realmProgress = totalRealms > 0 ? Math.round((unlockedRealms / totalRealms) * 100) : 0;
 
   const requirements = data?.endgameRequirements || [];
   const resources = data?.resources || [];
@@ -20,6 +21,9 @@ export default function ProgressPanel({ data, loading, error }) {
   const finalBadgeUnlocked = finalBadge
     ? userBadges.some((ub) => ub.badge_id === finalBadge.id)
     : false;
+  const overallProgress = Math.round(
+    ((allRealmsUnlocked ? 1 : 0) + (requirementsMet ? 1 : 0) + (finalBadgeUnlocked ? 1 : 0)) / 3 * 100
+  );
   const badges = data?.badges || [];
   const earnedBadges = badges.filter((b) => userBadges.some((ub) => ub.badge_id === b.id));
   const [showVictory, setShowVictory] = useState(
@@ -27,16 +31,27 @@ export default function ProgressPanel({ data, loading, error }) {
   );
 
   return (
-    <section className="mt-6 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-5">
+    <section className="mt-6 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-4 sm:p-5">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-xl">Progression</h2>
         <span className="text-xs text-[var(--color-muted)]">
           Royaumes: {unlockedRealms} / {totalRealms}
         </span>
       </div>
+      <p className="mt-1 text-xs text-[var(--color-muted)]">
+        Progression globale: {overallProgress}% (Royaumes: {realmProgress}%)
+      </p>
 
-      {loading && <p className="mt-3 text-sm text-[var(--color-muted)]">Chargement...</p>}
-      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+      {loading && (
+        <p className="mt-3 text-sm text-[var(--color-muted)]" aria-live="polite">
+          Chargement...
+        </p>
+      )}
+      {error && (
+        <p className="mt-3 text-sm text-red-400" aria-live="polite">
+          {error}
+        </p>
+      )}
 
       {!loading && !error && data && (
         <div className="mt-4 grid gap-4">
@@ -75,7 +90,7 @@ export default function ProgressPanel({ data, loading, error }) {
                 return (
                   <div key={req.id} className="flex items-center justify-between">
                     <span>{name}</span>
-                    <span>
+                    <span className="text-right tabular-nums">
                       {Math.floor(amount)} / {target} {done ? 'OK' : ''}
                     </span>
                   </div>
@@ -104,7 +119,7 @@ export default function ProgressPanel({ data, loading, error }) {
                 {earnedBadges.map((badge) => (
                   <div key={badge.id} className="flex items-center justify-between">
                     <span>{badge.name}</span>
-                    <span>OK</span>
+                    <span className="text-right tabular-nums">OK</span>
                   </div>
                 ))}
               </div>
