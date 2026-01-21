@@ -2,12 +2,17 @@ import pool from '../config/db.js';
 
 export async function getEndgameRanking(limit = 50) {
   const [rows] = await pool.query(
-    `SELECT ub.user_id, u.username, ub.obtained_at
+    `SELECT
+       ub.user_id,
+       u.username,
+       u.created_at,
+       ub.obtained_at,
+       TIMESTAMPDIFF(SECOND, u.created_at, ub.obtained_at) AS duration_seconds
      FROM user_badges ub
      JOIN badges b ON b.id = ub.badge_id
      JOIN users u ON u.id = ub.user_id
      WHERE b.code = 'MONSTRE_DU_IDLE'
-     ORDER BY ub.obtained_at ASC
+     ORDER BY duration_seconds ASC, ub.obtained_at ASC
      LIMIT ?`,
     [limit]
   );
