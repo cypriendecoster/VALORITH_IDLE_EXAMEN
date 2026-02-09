@@ -1,6 +1,7 @@
 import { getAllSkills, getSkillsByRealm } from '../models/skillModel.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère la liste complète des compétences du jeu
 export async function getSkillsController(req, res) {
   try {
     const skills = await getAllSkills();
@@ -16,6 +17,7 @@ export async function getSkillsController(req, res) {
   }
 }
 
+// Récupère les compétences associées à un royaume précis
 export async function getSkillsByRealmController(req, res) {
   try {
     const { realmId } = req.params;

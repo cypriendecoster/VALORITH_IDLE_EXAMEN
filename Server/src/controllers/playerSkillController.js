@@ -1,6 +1,7 @@
 import { getPlayerSkills } from '../models/playerSkillModel.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère les compétences débloquées par le joueur connecté
 export async function getPlayerSkillsController(req, res) {
   try {
     const skills = await getPlayerSkills(req.user.id);

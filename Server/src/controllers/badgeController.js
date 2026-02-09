@@ -1,6 +1,7 @@
 import { getAllBadges } from '../models/badgeModel.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère la liste des badges disponibles dans le jeu
 export async function getBadgesController(req, res) {
   try {
     const badges = await getAllBadges();

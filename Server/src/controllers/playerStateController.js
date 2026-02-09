@@ -1,6 +1,7 @@
 import { getPlayerState } from '../models/playerStateModel.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère l’état global du joueur connecté
 export async function getPlayerStateController(req, res) {
   try {
     const state = await getPlayerState(req.user.id);

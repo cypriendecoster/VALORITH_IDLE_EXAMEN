@@ -32,6 +32,7 @@ function isUsernameValid(username) {
   return USERNAME_REGEX.test(username);
 }
 
+// Inscription d’un nouvel utilisateur
 export async function registerController(req, res) {
   try {
     const { email, username, password } = req.body;
@@ -108,6 +109,7 @@ export async function registerController(req, res) {
   }
 }
 
+// Connexion d’un utilisateur existant
 export async function loginController(req, res) {
   try {
     const { email, password } = req.body;
@@ -155,6 +157,7 @@ export async function loginController(req, res) {
   }
 }
 
+// Demande de réinitialisation de mot de passe
 export async function requestPasswordResetController(req, res) {
   try {
     const { email } = req.body;
@@ -196,6 +199,7 @@ export async function requestPasswordResetController(req, res) {
   }
 }
 
+// Réinitialisation du mot de passe
 export async function resetPasswordController(req, res) {
   try {
     const { token, password } = req.body;

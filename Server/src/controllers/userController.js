@@ -3,6 +3,7 @@ import { findById } from '../models/userModel.js';
 import { resetProgress, deleteAccount } from '../services/accountService.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère le profil du joueur connecté
 export async function meController(req, res) {
   try {
     const userId = req.user.id;
@@ -26,6 +27,7 @@ export async function meController(req, res) {
   }
 }
 
+// Réinitialise la progression du joueur
 export async function resetProgressController(req, res) {
   try {
     const { password } = req.body;
@@ -49,6 +51,7 @@ export async function resetProgressController(req, res) {
   }
 }
 
+// Supprime définitivement le compte utilisateur
 export async function deleteAccountController(req, res) {
   try {
     const { password } = req.body;

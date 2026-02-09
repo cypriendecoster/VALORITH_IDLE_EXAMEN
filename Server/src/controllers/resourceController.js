@@ -1,6 +1,7 @@
 import { getAllResources } from '../models/resourceModel.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère la liste des ressources disponibles dans le jeu
 export async function getResourcesController(req, res) {
   try {
     const resources = await getAllResources();

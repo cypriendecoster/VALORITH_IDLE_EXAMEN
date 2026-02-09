@@ -4,6 +4,7 @@ import {
 } from '../models/realmUnlockCostModel.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère tous les coûts de déblocage des royaumes
 export async function getRealmUnlockCostsController(req, res) {
   try {
     const costs = await getAllRealmUnlockCosts();
@@ -19,6 +20,7 @@ export async function getRealmUnlockCostsController(req, res) {
   }
 }
 
+// Récupère les coûts de déblocage pour un royaume précis
 export async function getRealmUnlockCostsByRealmController(req, res) {
   try {
     const { realmId } = req.params;

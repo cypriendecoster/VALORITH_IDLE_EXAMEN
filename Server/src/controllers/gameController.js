@@ -5,6 +5,7 @@ import { upgradeSkill } from '../services/skillService.js';
 import { unlockRealm } from '../services/realmService.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère l’état complet du jeu pour le joueur connecté
 export async function getGameSnapshotController(req, res) {
   try {
     const data = await getGameSnapshot(req.user.id);
@@ -20,6 +21,7 @@ export async function getGameSnapshotController(req, res) {
   }
 }
 
+// Applique la production hors-ligne (idle)
 export async function idleTickController(req, res) {
   try {
     const result = await idleTick(req.user.id);
@@ -35,6 +37,7 @@ export async function idleTickController(req, res) {
   }
 }
 
+// Améliore une usine du joueur
 export async function upgradeFactoryController(req, res) {
   try {
     const { factoryId } = req.params;
@@ -58,6 +61,7 @@ export async function upgradeFactoryController(req, res) {
   }
 }
 
+// Améliore une compétence du joueur
 export async function upgradeSkillController(req, res) {
   try {
     const { skillId } = req.params;
@@ -80,6 +84,8 @@ export async function upgradeSkillController(req, res) {
     return res.status(status).json({ message, code });
   }
 }
+
+// Débloque un nouveau royaume pour le joueur
 export async function unlockRealmController(req, res) {
   try {
     const { realmId } = req.params;

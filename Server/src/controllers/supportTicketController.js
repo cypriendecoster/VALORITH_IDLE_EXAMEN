@@ -1,6 +1,7 @@
 import { createSupportTicket } from '../models/supportTicketModel.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Crée un ticket de support
 export async function createSupportTicketController(req, res) {
   try {
     const {
@@ -15,12 +16,14 @@ export async function createSupportTicketController(req, res) {
       client_meta
     } = req.body || {};
 
+      // Vérification des champs obligatoires
     if (!category || !message) {
       return res.status(400).json({
         message: 'Catégorie et message requis.',
         code: 'SUPPORT_FIELDS_MISSING'
       });
     }
+      // Si l’utilisateur n’est pas connecté, un email valide est requis
     if (!user_id) {
       if (!email) {
         return res.status(400).json({
@@ -35,7 +38,7 @@ export async function createSupportTicketController(req, res) {
         });
       }
     }
-
+     // Récupération des informations techniques (IP, navigateur)
     const ip_address =
       req.headers['x-forwarded-for']?.toString().split(',')[0]?.trim() ||
       req.socket?.remoteAddress ||

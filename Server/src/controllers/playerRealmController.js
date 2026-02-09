@@ -1,7 +1,8 @@
-import { getPlayerRealms } from '../models/playerRealmModel.js';
+﻿import { getPlayerRealms } from '../models/playerRealmModel.js';
 import { activateRealm } from '../services/realmService.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère les royaumes débloqués par le joueur connecté
 export async function getPlayerRealmsController(req, res) {
   try {
     const realms = await getPlayerRealms(req.user.id);
@@ -17,6 +18,7 @@ export async function getPlayerRealmsController(req, res) {
   }
 }
 
+// Active un royaume pour le joueur
 export async function activatePlayerRealmController(req, res) {
   try {
     const { realmId } = req.params;

@@ -9,6 +9,7 @@ import {
 } from '../services/adminService.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère la liste des tables accessibles depuis l’interface d’administration
 export async function getAdminTablesController(req, res) {
   try {
     const tables = await getAdminTables();
@@ -20,6 +21,7 @@ export async function getAdminTablesController(req, res) {
   }
 }
 
+// Récupère la structure d’une table pour l’affichage dynamique
 export async function getAdminTableSchemaController(req, res) {
   try {
     const { table } = req.params;
@@ -32,6 +34,7 @@ export async function getAdminTableSchemaController(req, res) {
   }
 }
 
+// Liste les lignes d’une table avec pagination
 export async function listAdminRowsController(req, res) {
   try {
     const { table } = req.params;
@@ -46,6 +49,7 @@ export async function listAdminRowsController(req, res) {
   }
 }
 
+// Récupère une ligne précise d’une table
 export async function getAdminRowController(req, res) {
   try {
     const { table, id } = req.params;
@@ -58,6 +62,7 @@ export async function getAdminRowController(req, res) {
   }
 }
 
+// Crée une nouvelle entrée via l’interface d’administration
 export async function createAdminRowController(req, res) {
   try {
     const { table } = req.params;
@@ -70,6 +75,7 @@ export async function createAdminRowController(req, res) {
   }
 }
 
+// Met à jour une entrée existante
 export async function updateAdminRowController(req, res) {
   try {
     const { table, id } = req.params;
@@ -82,6 +88,7 @@ export async function updateAdminRowController(req, res) {
   }
 }
 
+// Supprime une entrée via l’interface d’administration
 export async function deleteAdminRowController(req, res) {
   try {
     const { table, id } = req.params;

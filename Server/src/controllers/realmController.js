@@ -1,6 +1,7 @@
 import { getAllRealms } from '../models/realmModel.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère la liste des royaumes disponibles dans le jeu
 export async function getRealmsController(req, res) {
   try {
     const realms = await getAllRealms();

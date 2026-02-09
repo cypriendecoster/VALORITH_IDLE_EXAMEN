@@ -1,6 +1,7 @@
 import { getPlayerSessions } from '../models/playerSessionModel.js';
 import { toResponseError } from '../utils/errors.js';
 
+// Récupère l’historique des sessions du joueur connecté
 export async function getPlayerSessionsController(req, res) {
   try {
     const sessions = await getPlayerSessions(req.user.id);
