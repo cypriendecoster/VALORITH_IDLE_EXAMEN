@@ -1,7 +1,7 @@
 import { getPlayerStats } from '../models/playerStatsModel.js';
 import { toResponseError } from '../utils/errors.js';
 
-// Récupère les statistiques globales du joueur connecté
+// Recupere les statistiques globales du joueur connecte
 export async function getPlayerStatsController(req, res) {
   try {
     const stats = await getPlayerStats(req.user.id);
@@ -16,3 +16,4 @@ export async function getPlayerStatsController(req, res) {
     return res.status(status).json({ message, code });
   }
 }
+

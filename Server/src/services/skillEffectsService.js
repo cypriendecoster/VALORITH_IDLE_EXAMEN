@@ -1,11 +1,14 @@
+// Cree une map skill_id -> level
 export function buildSkillLevelMap(playerSkills) {
-  return playerSkills.reduce((acc, ps) => {
-    acc[ps.skill_id] = Number(ps.level);
-    return acc;
-  }, {});
+  const map = {};
+  for (const ps of playerSkills) {
+    map[ps.skill_id] = Number(ps.level);
+  }
+  return map;
 }
 
 export function getFactorySkillModifiers(factory, skills, playerSkillLevels, options = {}) {
+  // Calcule les multiplicateurs de production et de cout
   const { includeIdleBonus = false } = options;
   let productionMultiplier = 1;
   let costMultiplier = 1;

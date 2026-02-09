@@ -7,68 +7,59 @@ import { upsertPlayerState } from '../models/playerStateModel.js';
 import { createError } from '../utils/errors.js';
 
 export async function bootstrapNewPlayer(userId) {
-  try {
-    const existingRealms = await getPlayerRealms(userId);
-    if (existingRealms.length > 0) {
-      return { skipped: true };
-    }
+  // Ne rien faire si le joueur a deja une progression
+  const existingRealms = await getPlayerRealms(userId);
+  if (existingRealms.length > 0) {
+    return { skipped: true };
+  }
 
-    const realms = await getAllRealms();
-    if (!realms.length) {
-      throw createError({
-        code: 'REALMS_MISSING',
-        message: 'Initialisation impossible: aucun royaume disponible.',
-        status: 500
-      });
-    }
-
-    const defaultRealm = realms.find((r) => r.is_default_unlocked === 1) || realms[0];
-
-    const factories = await getFactoriesByRealm(defaultRealm.id);
-    if (!factories.length) {
-      throw createError({
-        code: 'STARTER_FACTORY_MISSING',
-        message: 'Initialisation impossible: aucune usine de départ.',
-        status: 500
-      });
-    }
-
-    const starterFactory = factories[0];
-
-    await insertPlayerRealm(userId, defaultRealm.id);
-    await setActiveRealm(userId, defaultRealm.id);
-
-    const existingFactory = await getPlayerFactory(userId, starterFactory.id);
-    if (!existingFactory) {
-      await insertPlayerFactory(userId, starterFactory.id, 1);
-    }
-
-    const existingResource = await getPlayerResource(userId, starterFactory.resource_id);
-    if (!existingResource) {
-      await insertPlayerResource({
-        userId,
-        resourceId: starterFactory.resource_id,
-        amount: 0,
-        amountCarry: 0
-      });
-    }
-
-    await upsertPlayerState(userId, new Date());
-
-    return {
-      realmId: defaultRealm.id,
-      factoryId: starterFactory.id
-    };
-  } catch (error) {
-    console.error(error);
-    if (error?.code) {
-      throw error;
-    }
+  const realms = await getAllRealms();
+  if (!realms.length) {
     throw createError({
-      code: 'PLAYER_BOOTSTRAP_FAILED',
-      message: 'Impossible d’initialiser le joueur.',
+      code: 'REALMS_MISSING',
+      message: 'Initialisation impossible: aucun royaume disponible.',
       status: 500
     });
   }
+
+  const defaultRealm = realms.find((r) => r.is_default_unlocked === 1) || realms[0];
+
+  const factories = await getFactoriesByRealm(defaultRealm.id);
+  if (!factories.length) {
+    throw createError({
+      code: 'STARTER_FACTORY_MISSING',
+      message: 'Initialisation impossible: aucune usine de départ.',
+      status: 500
+    });
+  }
+
+  const starterFactory = factories[0];
+
+  // Debloque le premier royaume et selectionne comme actif
+  await insertPlayerRealm(userId, defaultRealm.id);
+  await setActiveRealm(userId, defaultRealm.id);
+
+  const existingFactory = await getPlayerFactory(userId, starterFactory.id);
+  if (!existingFactory) {
+    await insertPlayerFactory(userId, starterFactory.id, 1);
+  }
+
+  // Donne la premiere ressource au joueur
+  const existingResource = await getPlayerResource(userId, starterFactory.resource_id);
+  if (!existingResource) {
+    await insertPlayerResource({
+      userId,
+      resourceId: starterFactory.resource_id,
+      amount: 0,
+      amountCarry: 0
+    });
+  }
+
+  await upsertPlayerState(userId, new Date());
+
+  return {
+    realmId: defaultRealm.id,
+    factoryId: starterFactory.id
+  };
 }
 

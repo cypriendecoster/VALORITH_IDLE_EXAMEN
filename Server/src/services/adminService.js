@@ -29,179 +29,77 @@ const ADMIN_TABLES = {
   endgame_rankings: { pk: 'id' }
 };
 
-function getTableConfig(tableName) {
-  return ADMIN_TABLES[tableName] || null;
+// Vérifie qu’une table est autorisée en administration.
+function assertTable(tableName) {
+  const config = ADMIN_TABLES[tableName];
+  if (!config) {
+    throw createError({
+      code: 'ADMIN_TABLE_NOT_ALLOWED',
+      message: 'Table non autorisee.',
+      status: 400
+    });
+  }
+  return config;
 }
 
-// Filtre les donnees pour ne garder que les colonnes autorisees
-function sanitizeData(data, columns) {
+//  Nettoie les données envoyées par le client.
+function sanitize(data, columns) {
   const allowed = new Set(columns.map((c) => c.COLUMN_NAME));
-  const sanitized = {};
+  const result = {};
   for (const [key, value] of Object.entries(data || {})) {
     if (allowed.has(key)) {
-      sanitized[key] = value;
+      result[key] = value;
     }
   }
-  return sanitized;
+  return result;
 }
 
-export async function getAdminTables() {
+//  Retourne la liste des tables accessibles en administration.
+export function getAdminTables() {
   return Object.keys(ADMIN_TABLES);
 }
 
+// Retourne le schéma d’une table (colonnes + clé primaire).
 export async function getAdminTableSchema(tableName) {
-  try {
-    const config = getTableConfig(tableName);
-    if (!config) {
-      throw createError({
-        code: 'ADMIN_TABLE_NOT_ALLOWED',
-        message: 'Table non autorisee.',
-        status: 400
-      });
-    }
-    const columns = await getTableColumns(tableName);
-    return { table: tableName, pk: config.pk, columns };
-  } catch (error) {
-    console.error(error);
-    if (error && error.code) {
-      throw error;
-    }
-    throw createError({
-      code: 'ADMIN_SCHEMA_FETCH_FAILED',
-      message: 'Impossible de charger le schema.',
-      status: 500
-    });
-  }
+  const config = assertTable(tableName);
+  const columns = await getTableColumns(tableName);
+  return { table: tableName, pk: config.pk, columns };
 }
 
-export async function listAdminRows(tableName, limit, offset) {
-  try {
-    const config = getTableConfig(tableName);
-    if (!config) {
-      throw createError({
-        code: 'ADMIN_TABLE_NOT_ALLOWED',
-        message: 'Table non autorisee.',
-        status: 400
-      });
-    }
-    const rows = await listRows(tableName, limit, offset);
-    return rows;
-  } catch (error) {
-    console.error(error);
-    if (error && error.code) {
-      throw error;
-    }
-    throw createError({
-      code: 'ADMIN_LIST_ROWS_FAILED',
-      message: 'Impossible de charger les enregistrements.',
-      status: 500
-    });
-  }
+//  Retourne la liste des enregistrements d’une table admin.
+export async function listAdminRows(tableName) {
+  assertTable(tableName);
+  return listRows(tableName);
 }
 
+//  Retourne un enregistrement précis par identifiant.
 export async function getAdminRow(tableName, id) {
-  try {
-    const config = getTableConfig(tableName);
-    if (!config) {
-      throw createError({
-        code: 'ADMIN_TABLE_NOT_ALLOWED',
-        message: 'Table non autorisee.',
-        status: 400
-      });
-    }
-    const row = await getRowById(tableName, config.pk, id);
-    return row;
-  } catch (error) {
-    console.error(error);
-    if (error && error.code) {
-      throw error;
-    }
-    throw createError({
-      code: 'ADMIN_GET_ROW_FAILED',
-      message: 'Impossible de charger l enregistrement.',
-      status: 500
-    });
-  }
+  const config = assertTable(tableName);
+  return getRowById(tableName, config.pk, id);
 }
 
+//  Crée un nouvel enregistrement dans une table admin.
 export async function createAdminRow(tableName, data) {
-  try {
-    const config = getTableConfig(tableName);
-    if (!config) {
-      throw createError({
-        code: 'ADMIN_TABLE_NOT_ALLOWED',
-        message: 'Table non autorisee.',
-        status: 400
-      });
-    }
-    const columns = await getTableColumns(tableName);
-    const sanitized = sanitizeData(data, columns);
-    const insertId = await insertRow(tableName, sanitized);
-    return { id: insertId };
-  } catch (error) {
-    console.error(error);
-    if (error && error.code) {
-      throw error;
-    }
-    throw createError({
-      code: 'ADMIN_CREATE_ROW_FAILED',
-      message: 'Impossible de creer l enregistrement.',
-      status: 500
-    });
-  }
+  assertTable(tableName);
+  const columns = await getTableColumns(tableName);
+  const sanitized = sanitize(data, columns);
+  const insertId = await insertRow(tableName, sanitized);
+  return { id: insertId };
 }
 
+//  Met à jour un enregistrement existant.
 export async function updateAdminRow(tableName, id, data) {
-  try {
-    const config = getTableConfig(tableName);
-    if (!config) {
-      throw createError({
-        code: 'ADMIN_TABLE_NOT_ALLOWED',
-        message: 'Table non autorisee.',
-        status: 400
-      });
-    }
-    const columns = await getTableColumns(tableName);
-    const sanitized = sanitizeData(data, columns);
-    if (sanitized[config.pk] !== undefined) {
-      delete sanitized[config.pk];
-    }
-    await updateRow(tableName, config.pk, id, sanitized);
-    return { status: 'ok' };
-  } catch (error) {
-    console.error(error);
-    if (error && error.code) {
-      throw error;
-    }
-    throw createError({
-      code: 'ADMIN_UPDATE_ROW_FAILED',
-      message: 'Impossible de modifier l enregistrement.',
-      status: 500
-    });
-  }
+  const config = assertTable(tableName);
+  const columns = await getTableColumns(tableName);
+  const sanitized = sanitize(data, columns);
+  delete sanitized[config.pk];
+  await updateRow(tableName, config.pk, id, sanitized);
+  return { status: 'ok' };
 }
 
+//  Supprime un enregistrement dans une table admin.
 export async function deleteAdminRow(tableName, id) {
-  try {
-    const config = getTableConfig(tableName);
-    if (!config) {
-      throw createError({
-        code: 'ADMIN_TABLE_NOT_ALLOWED',
-        message: 'Table non autorisee.',
-        status: 400
-      });
-    }
-    await deleteRow(tableName, config.pk, id);
-    return { status: 'ok' };
-  } catch (error) {
-    console.error(error);
-    if (error && error.code) {
-      throw error;
-    }
-    throw createError({
-      code: 'ADMIN_DELETE_ROW_FAILED',
-      message: 'Impossible de supprimer l enregistrement.',
-      status: 500
-    });
-  }
+  const config = assertTable(tableName);
+  await deleteRow(tableName, config.pk, id);
+  return { status: 'ok' };
 }

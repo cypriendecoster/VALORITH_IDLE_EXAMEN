@@ -1,7 +1,7 @@
 import { getEndgameRanking, getResourceRanking } from '../models/rankingModel.js';
 import { toResponseError } from '../utils/errors.js';
 
-// Récupère le classement de fin de jeu
+// Recupere le classement de fin de jeu
 export async function getEndgameRankingController(req, res) {
   try {
     const limit = Number(req.query.limit) || 50;
@@ -18,7 +18,7 @@ export async function getEndgameRankingController(req, res) {
   }
 }
 
-// Récupère le classement des joueurs par ressources cumulées
+// Recupere le classement des joueurs par ressources cumulees
 export async function getResourceRankingController(req, res) {
   try {
     const limit = Number(req.query.limit) || 50;
@@ -34,3 +34,4 @@ export async function getResourceRankingController(req, res) {
     return res.status(status).json({ message, code });
   }
 }
+

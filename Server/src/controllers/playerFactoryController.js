@@ -1,7 +1,7 @@
 import { getPlayerFactories } from '../models/playerFactoryModel.js';
 import { toResponseError } from '../utils/errors.js';
 
-// Récupère les usines possédées par le joueur connecté
+// Recupere les usines possedees par le joueur connecte
 export async function getPlayerFactoriesController(req, res) {
   try {
     const factories = await getPlayerFactories(req.user.id);
@@ -16,3 +16,4 @@ export async function getPlayerFactoriesController(req, res) {
     return res.status(status).json({ message, code });
   }
 }
+

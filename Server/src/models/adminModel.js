@@ -12,11 +12,10 @@ export async function getTableColumns(tableName) {
   return rows;
 }
 
-export async function listRows(tableName, limit, offset) {
-  // Lire plusieurs lignes avec pagination
+export async function listRows(tableName) {
+  // Lire toutes les lignes
   const [rows] = await pool.query(
-    `SELECT * FROM \`${tableName}\` LIMIT ? OFFSET ?`,
-    [limit, offset]
+    `SELECT * FROM \`${tableName}\``
   );
   return rows;
 }

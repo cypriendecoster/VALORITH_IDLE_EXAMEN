@@ -1,7 +1,7 @@
 import { getPlayerResources } from '../models/playerResourceModel.js';
 import { toResponseError } from '../utils/errors.js';
 
-// Récupère les ressources possédées par le joueur connecté
+// Recupere les ressources possedees par le joueur connecte
 export async function getPlayerResourcesController(req, res) {
   try {
     const resources = await getPlayerResources(req.user.id);
@@ -16,3 +16,4 @@ export async function getPlayerResourcesController(req, res) {
     return res.status(status).json({ message, code });
   }
 }
+

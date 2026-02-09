@@ -1,7 +1,7 @@
 import { getAllFactories, getFactoriesByRealm } from '../models/factoryModel.js';
 import { toResponseError } from '../utils/errors.js';
 
-// Récupère la liste complète des usines disponibles
+// Recupere la liste complete des usines disponibles
 export async function getFactoriesController(req, res) {
   try {
     const factories = await getAllFactories();
@@ -17,7 +17,7 @@ export async function getFactoriesController(req, res) {
   }
 }
 
-// Récupère les usines associées à un royaume précis
+// Recupere les usines associees a un royaume precis
 export async function getFactoriesByRealmController(req, res) {
   try {
     const { realmId } = req.params;
@@ -40,3 +40,4 @@ export async function getFactoriesByRealmController(req, res) {
     return res.status(status).json({ message, code });
   }
 }
+

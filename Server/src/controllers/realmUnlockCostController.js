@@ -4,7 +4,7 @@ import {
 } from '../models/realmUnlockCostModel.js';
 import { toResponseError } from '../utils/errors.js';
 
-// Récupère tous les coûts de déblocage des royaumes
+// Recupere tous les couts de deblocage des royaumes
 export async function getRealmUnlockCostsController(req, res) {
   try {
     const costs = await getAllRealmUnlockCosts();
@@ -13,14 +13,14 @@ export async function getRealmUnlockCostsController(req, res) {
     console.error(error);
     const { status, message, code } = toResponseError(
       error,
-      'Impossible de charger les coûts de déblocage.',
+      'Impossible de charger les couts de deblocage.',
       'REALM_UNLOCK_COSTS_FETCH_FAILED'
     );
     return res.status(status).json({ message, code });
   }
 }
 
-// Récupère les coûts de déblocage pour un royaume précis
+// Recupere les couts de deblocage pour un royaume precis
 export async function getRealmUnlockCostsByRealmController(req, res) {
   try {
     const { realmId } = req.params;
@@ -36,9 +36,10 @@ export async function getRealmUnlockCostsByRealmController(req, res) {
     console.error(error);
     const { status, message, code } = toResponseError(
       error,
-      'Impossible de charger les coûts de déblocage.',
+      'Impossible de charger les couts de deblocage.',
       'REALM_UNLOCK_COSTS_FETCH_FAILED'
     );
     return res.status(status).json({ message, code });
   }
 }
+

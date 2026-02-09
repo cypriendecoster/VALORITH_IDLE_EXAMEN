@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { createSupportTicketController } from '../controllers/supportTicketController.js';
 
+// Limitation simple du nombre de tickets par IP
 const router = Router();
 
 const RATE_WINDOW_MS = 10 * 60 * 1000;

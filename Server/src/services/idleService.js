@@ -8,106 +8,97 @@ import { getPlayerFactoriesForIdle } from '../models/playerFactoryModel.js';
 import { getPlayerSkills } from '../models/playerSkillModel.js';
 import { getPlayerState, upsertPlayerState } from '../models/playerStateModel.js';
 import { buildSkillLevelMap, getFactorySkillModifiers } from './skillEffectsService.js';
-import { createError } from '../utils/errors.js';
 
 export async function idleTick(userId) {
-  try {
-    const now = new Date();
+  const now = new Date();
 
-    const state = await getPlayerState(userId);
-    const lastUpdate = state?.last_idle_update ? new Date(state.last_idle_update) : now;
-    const rawDeltaSeconds = Math.max(0, Math.floor((now - lastUpdate) / 1000));
-    const offlineThreshold = Number(process.env.IDLE_OFFLINE_THRESHOLD_SECONDS || 30);
-    const isOffline = rawDeltaSeconds > Math.max(1, offlineThreshold);
-    const cappedDeltaSeconds = Math.min(rawDeltaSeconds, 2 * 60 * 60);
-    const deltaSeconds = isOffline ? cappedDeltaSeconds : rawDeltaSeconds;
-    const offlineMultiplier = isOffline ? 0.3 : 1;
+  const state = await getPlayerState(userId);
+  // Calcule le temps ecoule depuis la derniere mise a jour
+  const lastUpdate = state && state.last_idle_update ? new Date(state.last_idle_update) : now;
+  const rawDeltaSeconds = Math.max(0, Math.floor((now - lastUpdate) / 1000));
+  const offlineThreshold = Number(process.env.IDLE_OFFLINE_THRESHOLD_SECONDS || 30);
+  const isOffline = rawDeltaSeconds > Math.max(1, offlineThreshold);
+  const cappedDeltaSeconds = Math.min(rawDeltaSeconds, 2 * 60 * 60);
+  const deltaSeconds = isOffline ? cappedDeltaSeconds : rawDeltaSeconds;
+  const offlineMultiplier = isOffline ? 0.3 : 1;
 
-    if (deltaSeconds === 0) {
-      return { deltaSeconds: 0, updated: [] };
+  if (deltaSeconds === 0) {
+    return { deltaSeconds: 0, updated: [] };
+  }
+
+  // Charge les usines et competences du joueur
+  const [factories, skills, playerSkills] = await Promise.all([
+    getPlayerFactoriesForIdle(userId),
+    getAllSkills(),
+    getPlayerSkills(userId)
+  ]);
+
+  const playerSkillLevels = buildSkillLevelMap(playerSkills);
+
+  // Calcule les gains par ressource
+  const gainsByResource = {};
+  for (const f of factories) {
+    const { productionMultiplier } = getFactorySkillModifiers(
+      f,
+      skills,
+      playerSkillLevels,
+      { includeIdleBonus: isOffline }
+    );
+    const gain = Number(f.base_production) * Number(f.level) * deltaSeconds
+      * productionMultiplier * offlineMultiplier;
+    if (!gainsByResource[f.resource_id]) {
+      gainsByResource[f.resource_id] = 0;
     }
+    gainsByResource[f.resource_id] += gain;
+  }
 
-    const [factories, skills, playerSkills] = await Promise.all([
-      getPlayerFactoriesForIdle(userId),
-      getAllSkills(),
-      getPlayerSkills(userId)
-    ]);
+  const updated = [];
 
-    const playerSkillLevels = buildSkillLevelMap(playerSkills);
+  // Applique les gains ressource par ressource
+  for (const [resourceIdStr, gain] of Object.entries(gainsByResource)) {
+    const resourceId = Number(resourceIdStr);
+    const existing = await getPlayerResource(userId, resourceId);
 
-    const gainsByResource = {};
-    for (const f of factories) {
-      const { productionMultiplier } = getFactorySkillModifiers(
-        f,
-        skills,
-        playerSkillLevels,
-        { includeIdleBonus: isOffline }
-      );
-      const gain = Number(f.base_production) * Number(f.level) * deltaSeconds
-        * productionMultiplier * offlineMultiplier;
-      if (!gainsByResource[f.resource_id]) {
-        gainsByResource[f.resource_id] = 0;
-      }
-      gainsByResource[f.resource_id] += gain;
-    }
+    const currentAmount = existing ? Number(existing.amount) : 0;
+    const currentCarry = existing ? Number(existing.amount_carry) : 0;
 
-    const updated = [];
+    const total = currentAmount + currentCarry + gain;
+    const newAmount = Math.floor(total);
+    const newCarry = total - newAmount;
 
-    for (const [resourceIdStr, gain] of Object.entries(gainsByResource)) {
-      const resourceId = Number(resourceIdStr);
-      const existing = await getPlayerResource(userId, resourceId);
-
-      const currentAmount = existing ? Number(existing.amount) : 0;
-      const currentCarry = existing ? Number(existing.amount_carry) : 0;
-
-      const total = currentAmount + currentCarry + gain;
-      const newAmount = Math.floor(total);
-      const newCarry = total - newAmount;
-
-      if (!existing) {
-        await insertPlayerResource({
-          userId,
-          resourceId,
-          amount: newAmount,
-          amountCarry: newCarry
-        });
-      } else {
-        await updatePlayerResource({
-          userId,
-          resourceId,
-          amount: newAmount,
-          amountCarry: newCarry,
-          addLifetime: gain
-        });
-      }
-
-      updated.push({
+    if (!existing) {
+      await insertPlayerResource({
+        userId,
+        resourceId,
+        amount: newAmount,
+        amountCarry: newCarry
+      });
+    } else {
+      await updatePlayerResource({
+        userId,
         resourceId,
         amount: newAmount,
         amountCarry: newCarry,
-        gain
+        addLifetime: gain
       });
     }
 
-    await upsertPlayerState(userId, now);
-
-    return {
-      deltaSeconds,
-      updated,
-      isOffline,
-      offlineMultiplier,
-      appliedSeconds: deltaSeconds,
-      idleBonusApplied: isOffline
-    };
-  } catch (error) {
-    console.error(error);
-    if (error?.code) {
-      throw error;
-    }
-    throw createError({
-      code: 'IDLE_TICK_FAILED',
-      message: 'Calcul hors-ligne indisponible pour le moment.',
-      status: 500
+    updated.push({
+      resourceId,
+      amount: newAmount,
+      amountCarry: newCarry,
+      gain
     });
   }
+
+  await upsertPlayerState(userId, now);
+
+  return {
+    deltaSeconds,
+    updated,
+    isOffline,
+    offlineMultiplier,
+    appliedSeconds: deltaSeconds,
+    idleBonusApplied: isOffline
+  };
 }

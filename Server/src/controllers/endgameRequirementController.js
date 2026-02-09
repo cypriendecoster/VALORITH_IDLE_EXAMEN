@@ -1,7 +1,7 @@
 import { getAllEndgameRequirements } from '../models/endgameRequirementModel.js';
 import { toResponseError } from '../utils/errors.js';
 
-// récupère les données de fin du jeu
+// recupere les donnees de fin du jeu
 export async function getEndgameRequirementsController(req, res) {
   try {
     const requirements = await getAllEndgameRequirements();
@@ -16,3 +16,4 @@ export async function getEndgameRequirementsController(req, res) {
     return res.status(status).json({ message, code });
   }
 }
+

@@ -1,7 +1,7 @@
 import { getAllSkills, getSkillsByRealm } from '../models/skillModel.js';
 import { toResponseError } from '../utils/errors.js';
 
-// Récupère la liste complète des compétences du jeu
+// Recupere la liste complete des competences du jeu
 export async function getSkillsController(req, res) {
   try {
     const skills = await getAllSkills();
@@ -10,14 +10,14 @@ export async function getSkillsController(req, res) {
     console.error(error);
     const { status, message, code } = toResponseError(
       error,
-      'Impossible de charger les compétences.',
+      'Impossible de charger les competences.',
       'SKILLS_FETCH_FAILED'
     );
     return res.status(status).json({ message, code });
   }
 }
 
-// Récupère les compétences associées à un royaume précis
+// Recupere les competences associees a un royaume precis
 export async function getSkillsByRealmController(req, res) {
   try {
     const { realmId } = req.params;
@@ -33,9 +33,10 @@ export async function getSkillsByRealmController(req, res) {
     console.error(error);
     const { status, message, code } = toResponseError(
       error,
-      'Impossible de charger les compétences.',
+      'Impossible de charger les competences.',
       'SKILLS_FETCH_FAILED'
     );
     return res.status(status).json({ message, code });
   }
 }
+

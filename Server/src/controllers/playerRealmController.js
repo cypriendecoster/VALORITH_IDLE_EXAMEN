@@ -1,8 +1,8 @@
-ï»¿import { getPlayerRealms } from '../models/playerRealmModel.js';
+import { getPlayerRealms } from '../models/playerRealmModel.js';
 import { activateRealm } from '../services/realmService.js';
 import { toResponseError } from '../utils/errors.js';
 
-// RÃ©cupÃ¨re les royaumes dÃ©bloquÃ©s par le joueur connectÃ©
+// Récupère les royaumes débloqués par le joueur connecté
 export async function getPlayerRealmsController(req, res) {
   try {
     const realms = await getPlayerRealms(req.user.id);
@@ -35,9 +35,10 @@ export async function activatePlayerRealmController(req, res) {
     console.error(error);
     const { status, message, code } = toResponseError(
       error,
-      'Impossible dâ€™activer le royaume.',
+      'Impossible d’activer le royaume.',
       'REALM_ACTIVATE_FAILED'
     );
     return res.status(status).json({ message, code });
   }
 }
+
