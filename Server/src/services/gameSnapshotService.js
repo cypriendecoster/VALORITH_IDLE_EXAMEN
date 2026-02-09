@@ -13,6 +13,7 @@ import { getPlayerRealms } from '../models/playerRealmModel.js';
 import { getPlayerState } from '../models/playerStateModel.js';
 import { getPlayerStats } from '../models/playerStatsModel.js';
 import { buildSkillLevelMap, getFactorySkillModifiers } from './skillEffectsService.js';
+import { createError } from '../utils/errors.js';
 
 export async function getGameSnapshot(userId) {
   try {
@@ -108,6 +109,13 @@ export async function getGameSnapshot(userId) {
     };
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Game snapshot failed');
+    if (error?.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'GAME_SNAPSHOT_FAILED',
+      message: 'Impossible de charger les données du jeu pour le moment.',
+      status: 500
+    });
   }
 }

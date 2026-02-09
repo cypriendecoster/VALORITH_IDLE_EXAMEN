@@ -1,5 +1,6 @@
 import pool from '../config/db.js';
 
+// Récupère tous les badges obtenus par un utilisateur
 export async function getUserBadges(userId) {
   const [rows] = await pool.query(
     `SELECT id, user_id, badge_id, obtained_at
@@ -11,6 +12,7 @@ export async function getUserBadges(userId) {
   return rows;
 }
 
+// Ajoute un badge à un utilisateur
 export async function insertUserBadge(userId, badgeId) {
   await pool.query(
     `INSERT INTO user_badges (user_id, badge_id, obtained_at)
@@ -19,6 +21,7 @@ export async function insertUserBadge(userId, badgeId) {
   );
 }
 
+// Supprime tous les badges d’un utilisateur
 export async function deleteUserBadges(userId) {
   await pool.query(
     `DELETE FROM user_badges

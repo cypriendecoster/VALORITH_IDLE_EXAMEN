@@ -6,7 +6,9 @@ import {
   updateRow,
   deleteRow
 } from '../models/adminModel.js';
+import { createError } from '../utils/errors.js';
 
+// Liste blanche des tables accessibles en admin
 const ADMIN_TABLES = {
   users: { pk: 'id' },
   skills: { pk: 'id' },
@@ -31,6 +33,7 @@ function getTableConfig(tableName) {
   return ADMIN_TABLES[tableName] || null;
 }
 
+// Filtre les donnees pour ne garder que les colonnes autorisees
 function sanitizeData(data, columns) {
   const allowed = new Set(columns.map((c) => c.COLUMN_NAME));
   const sanitized = {};
@@ -50,13 +53,24 @@ export async function getAdminTableSchema(tableName) {
   try {
     const config = getTableConfig(tableName);
     if (!config) {
-      throw new Error('Table not allowed');
+      throw createError({
+        code: 'ADMIN_TABLE_NOT_ALLOWED',
+        message: 'Table non autorisee.',
+        status: 400
+      });
     }
     const columns = await getTableColumns(tableName);
     return { table: tableName, pk: config.pk, columns };
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Schema fetch failed');
+    if (error && error.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'ADMIN_SCHEMA_FETCH_FAILED',
+      message: 'Impossible de charger le schema.',
+      status: 500
+    });
   }
 }
 
@@ -64,13 +78,24 @@ export async function listAdminRows(tableName, limit, offset) {
   try {
     const config = getTableConfig(tableName);
     if (!config) {
-      throw new Error('Table not allowed');
+      throw createError({
+        code: 'ADMIN_TABLE_NOT_ALLOWED',
+        message: 'Table non autorisee.',
+        status: 400
+      });
     }
     const rows = await listRows(tableName, limit, offset);
     return rows;
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'List rows failed');
+    if (error && error.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'ADMIN_LIST_ROWS_FAILED',
+      message: 'Impossible de charger les enregistrements.',
+      status: 500
+    });
   }
 }
 
@@ -78,13 +103,24 @@ export async function getAdminRow(tableName, id) {
   try {
     const config = getTableConfig(tableName);
     if (!config) {
-      throw new Error('Table not allowed');
+      throw createError({
+        code: 'ADMIN_TABLE_NOT_ALLOWED',
+        message: 'Table non autorisee.',
+        status: 400
+      });
     }
     const row = await getRowById(tableName, config.pk, id);
     return row;
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Get row failed');
+    if (error && error.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'ADMIN_GET_ROW_FAILED',
+      message: 'Impossible de charger l enregistrement.',
+      status: 500
+    });
   }
 }
 
@@ -92,7 +128,11 @@ export async function createAdminRow(tableName, data) {
   try {
     const config = getTableConfig(tableName);
     if (!config) {
-      throw new Error('Table not allowed');
+      throw createError({
+        code: 'ADMIN_TABLE_NOT_ALLOWED',
+        message: 'Table non autorisee.',
+        status: 400
+      });
     }
     const columns = await getTableColumns(tableName);
     const sanitized = sanitizeData(data, columns);
@@ -100,7 +140,14 @@ export async function createAdminRow(tableName, data) {
     return { id: insertId };
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Create row failed');
+    if (error && error.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'ADMIN_CREATE_ROW_FAILED',
+      message: 'Impossible de creer l enregistrement.',
+      status: 500
+    });
   }
 }
 
@@ -108,7 +155,11 @@ export async function updateAdminRow(tableName, id, data) {
   try {
     const config = getTableConfig(tableName);
     if (!config) {
-      throw new Error('Table not allowed');
+      throw createError({
+        code: 'ADMIN_TABLE_NOT_ALLOWED',
+        message: 'Table non autorisee.',
+        status: 400
+      });
     }
     const columns = await getTableColumns(tableName);
     const sanitized = sanitizeData(data, columns);
@@ -119,7 +170,14 @@ export async function updateAdminRow(tableName, id, data) {
     return { status: 'ok' };
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Update row failed');
+    if (error && error.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'ADMIN_UPDATE_ROW_FAILED',
+      message: 'Impossible de modifier l enregistrement.',
+      status: 500
+    });
   }
 }
 
@@ -127,12 +185,23 @@ export async function deleteAdminRow(tableName, id) {
   try {
     const config = getTableConfig(tableName);
     if (!config) {
-      throw new Error('Table not allowed');
+      throw createError({
+        code: 'ADMIN_TABLE_NOT_ALLOWED',
+        message: 'Table non autorisee.',
+        status: 400
+      });
     }
     await deleteRow(tableName, config.pk, id);
     return { status: 'ok' };
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Delete row failed');
+    if (error && error.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'ADMIN_DELETE_ROW_FAILED',
+      message: 'Impossible de supprimer l enregistrement.',
+      status: 500
+    });
   }
 }

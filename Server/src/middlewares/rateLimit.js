@@ -16,7 +16,10 @@ export function rateLimit({ windowMs = 60000, max = 10, keyPrefix = 'rl' } = {})
     cleanupBucket(bucket, now, windowMs);
 
     if (bucket.timestamps.length >= max) {
-      return res.status(429).json({ message: 'Too many requests, please try again later.' });
+      return res.status(429).json({
+        message: 'Trop de requêtes, réessaie plus tard.',
+        code: 'RATE_LIMITED'
+      });
     }
 
     bucket.timestamps.push(now);

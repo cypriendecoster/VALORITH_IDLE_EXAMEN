@@ -6,24 +6,37 @@ import {
   updatePlayerSkillLevel
 } from '../models/playerSkillModel.js';
 import { getPlayerRealm } from '../models/playerRealmModel.js';
+import { createError } from '../utils/errors.js';
 
 export async function upgradeSkill(userId, skillId) {
   try {
     const skill = await getSkillById(skillId);
     if (!skill) {
-      throw new Error('Skill not found');
+      throw createError({
+        code: 'SKILL_NOT_FOUND',
+        message: 'Compétence introuvable.',
+        status: 404
+      });
     }
 
     const realm = await getPlayerRealm(userId, skill.realm_id);
     if (!realm) {
-      throw new Error('Realm not unlocked');
+      throw createError({
+        code: 'REALM_NOT_UNLOCKED',
+        message: 'Royaume non débloqué.',
+        status: 403
+      });
     }
 
     const playerSkill = await getPlayerSkill(userId, skill.id);
     const currentLevel = playerSkill ? Number(playerSkill.level) : 0;
 
     if (currentLevel >= Number(skill.max_level)) {
-      throw new Error('Skill max level reached');
+      throw createError({
+        code: 'SKILL_MAX_LEVEL',
+        message: 'Niveau maximum atteint.',
+        status: 400
+      });
     }
 
     const cost = Math.ceil(
@@ -36,7 +49,11 @@ export async function upgradeSkill(userId, skillId) {
     const total = currentAmount + currentCarry;
 
     if (total < cost) {
-      throw new Error('Not enough resources');
+      throw createError({
+        code: 'RESOURCES_INSUFFICIENT',
+        message: 'Ressources insuffisantes.',
+        status: 400
+      });
     }
 
     const newTotal = total - cost;
@@ -67,6 +84,13 @@ export async function upgradeSkill(userId, skillId) {
     };
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Skill upgrade failed');
+    if (error?.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'SKILL_UPGRADE_FAILED',
+      message: 'Impossible d’améliorer la compétence pour le moment.',
+      status: 500
+    });
   }
 }

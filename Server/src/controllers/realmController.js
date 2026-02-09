@@ -1,4 +1,5 @@
-﻿import { getAllRealms } from '../models/realmModel.js';
+import { getAllRealms } from '../models/realmModel.js';
+import { toResponseError } from '../utils/errors.js';
 
 export async function getRealmsController(req, res) {
   try {
@@ -6,9 +7,11 @@ export async function getRealmsController(req, res) {
     return res.status(200).json(realms);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(
+      error,
+      'Impossible de charger les royaumes.',
+      'REALMS_FETCH_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
-
-
-

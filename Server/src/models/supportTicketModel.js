@@ -1,5 +1,6 @@
 import pool from '../config/db.js';
 
+// Crée un ticket de support à partir des informations fournies par l’utilisateur
 export async function createSupportTicket(data) {
   const {
     user_id,

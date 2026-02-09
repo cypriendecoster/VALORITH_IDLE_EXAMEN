@@ -7,6 +7,7 @@ import {
   updateAdminRow,
   deleteAdminRow
 } from '../services/adminService.js';
+import { toResponseError } from '../utils/errors.js';
 
 export async function getAdminTablesController(req, res) {
   try {
@@ -14,7 +15,8 @@ export async function getAdminTablesController(req, res) {
     return res.status(200).json(tables);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(error, 'Erreur admin.', 'ADMIN_ERROR');
+    return res.status(status).json({ message, code });
   }
 }
 
@@ -25,8 +27,8 @@ export async function getAdminTableSchemaController(req, res) {
     return res.status(200).json(schema);
   } catch (error) {
     console.error(error);
-    const status = error.message === 'Table not allowed' ? 400 : 500;
-    return res.status(status).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(error, 'Erreur admin.', 'ADMIN_SCHEMA_FETCH_FAILED');
+    return res.status(status).json({ message, code });
   }
 }
 
@@ -39,8 +41,8 @@ export async function listAdminRowsController(req, res) {
     return res.status(200).json(rows);
   } catch (error) {
     console.error(error);
-    const status = error.message === 'Table not allowed' ? 400 : 500;
-    return res.status(status).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(error, 'Erreur admin.', 'ADMIN_LIST_ROWS_FAILED');
+    return res.status(status).json({ message, code });
   }
 }
 
@@ -51,8 +53,8 @@ export async function getAdminRowController(req, res) {
     return res.status(200).json(row);
   } catch (error) {
     console.error(error);
-    const status = error.message === 'Table not allowed' ? 400 : 500;
-    return res.status(status).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(error, 'Erreur admin.', 'ADMIN_GET_ROW_FAILED');
+    return res.status(status).json({ message, code });
   }
 }
 
@@ -63,8 +65,8 @@ export async function createAdminRowController(req, res) {
     return res.status(201).json(result);
   } catch (error) {
     console.error(error);
-    const status = error.message === 'Table not allowed' ? 400 : 500;
-    return res.status(status).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(error, 'Erreur admin.', 'ADMIN_CREATE_ROW_FAILED');
+    return res.status(status).json({ message, code });
   }
 }
 
@@ -75,8 +77,8 @@ export async function updateAdminRowController(req, res) {
     return res.status(200).json(result);
   } catch (error) {
     console.error(error);
-    const status = error.message === 'Table not allowed' ? 400 : 500;
-    return res.status(status).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(error, 'Erreur admin.', 'ADMIN_UPDATE_ROW_FAILED');
+    return res.status(status).json({ message, code });
   }
 }
 
@@ -87,7 +89,7 @@ export async function deleteAdminRowController(req, res) {
     return res.status(200).json(result);
   } catch (error) {
     console.error(error);
-    const status = error.message === 'Table not allowed' ? 400 : 500;
-    return res.status(status).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(error, 'Erreur admin.', 'ADMIN_DELETE_ROW_FAILED');
+    return res.status(status).json({ message, code });
   }
 }

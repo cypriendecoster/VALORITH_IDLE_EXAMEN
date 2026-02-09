@@ -19,7 +19,10 @@ function rateLimitSupport(req, res, next) {
     return next();
   }
   if (entry.count >= RATE_MAX) {
-    return res.status(429).json({ message: 'Trop de requetes, reessaie plus tard.' });
+    return res.status(429).json({
+      message: 'Trop de requêtes, réessaie plus tard.',
+      code: 'SUPPORT_RATE_LIMITED'
+    });
   }
   entry.count += 1;
   return next();

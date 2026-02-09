@@ -1,5 +1,6 @@
 import pool from '../config/db.js';
 
+// Récupère la liste complète des usines, toutes factions confondues
 export async function getAllFactories() {
     const [rows] = await pool.query(
         `SELECT id, realm_id, resource_id, code, name, description, base_production, base_cost, unlock_order, is_active
@@ -9,6 +10,7 @@ export async function getAllFactories() {
     return rows;
 }
 
+// Récupère les usines d’un royaume spécifique
 export async function getFactoriesByRealm(realmId) {
     const [rows] = await pool.query(
         `SELECT id, realm_id, resource_id, code, name, description, base_production, base_cost, unlock_order, is_active
@@ -20,6 +22,7 @@ export async function getFactoriesByRealm(realmId) {
     return rows;
 }
 
+// Récupère une usine précise par son identifiant
 export async function getFactoryById(factoryId) {
     const [rows] = await pool.query(
         `SELECT id, realm_id, resource_id, base_cost, base_production

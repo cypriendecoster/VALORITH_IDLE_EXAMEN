@@ -1,5 +1,6 @@
 import pool from '../config/db.js';
 
+// Récupère les statistiques globales d’un joueur
 export async function getPlayerStats(userId) {
   const [rows] = await pool.query(
     `SELECT user_id, total_play_time_seconds, total_logins, max_realm_unlocked_id,

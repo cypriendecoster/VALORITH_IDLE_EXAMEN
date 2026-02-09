@@ -1,4 +1,5 @@
-﻿import { getPlayerFactories } from '../models/playerFactoryModel.js';
+import { getPlayerFactories } from '../models/playerFactoryModel.js';
+import { toResponseError } from '../utils/errors.js';
 
 export async function getPlayerFactoriesController(req, res) {
   try {
@@ -6,7 +7,11 @@ export async function getPlayerFactoriesController(req, res) {
     return res.status(200).json(factories);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(
+      error,
+      'Impossible de charger les usines du joueur.',
+      'PLAYER_FACTORIES_FETCH_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
-

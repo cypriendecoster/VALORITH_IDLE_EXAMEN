@@ -8,6 +8,7 @@ import { getPlayerFactoriesForIdle } from '../models/playerFactoryModel.js';
 import { getPlayerSkills } from '../models/playerSkillModel.js';
 import { getPlayerState, upsertPlayerState } from '../models/playerStateModel.js';
 import { buildSkillLevelMap, getFactorySkillModifiers } from './skillEffectsService.js';
+import { createError } from '../utils/errors.js';
 
 export async function idleTick(userId) {
   try {
@@ -100,6 +101,13 @@ export async function idleTick(userId) {
     };
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Idle tick failed');
+    if (error?.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'IDLE_TICK_FAILED',
+      message: 'Calcul hors-ligne indisponible pour le moment.',
+      status: 500
+    });
   }
 }

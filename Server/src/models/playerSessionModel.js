@@ -1,5 +1,6 @@
 import pool from '../config/db.js';
 
+// Récupère l’historique des sessions d’un joueur
 export async function getPlayerSessions(userId) {
   const [rows] = await pool.query(
     `SELECT id, user_id, login_at, logout_at, ip_address, user_agent

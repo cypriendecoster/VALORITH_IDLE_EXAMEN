@@ -1,4 +1,5 @@
-﻿import { getPlayerState } from '../models/playerStateModel.js';
+import { getPlayerState } from '../models/playerStateModel.js';
+import { toResponseError } from '../utils/errors.js';
 
 export async function getPlayerStateController(req, res) {
   try {
@@ -6,7 +7,11 @@ export async function getPlayerStateController(req, res) {
     return res.status(200).json(state);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(
+      error,
+      'Impossible de charger l’état du joueur.',
+      'PLAYER_STATE_FETCH_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
-

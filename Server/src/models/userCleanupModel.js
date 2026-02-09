@@ -1,5 +1,7 @@
 import pool from '../config/db.js';
 
+//Supprime toutes les données de toutes les tables d'un joueur.
+
 export async function deletePlayerResources(userId) {
   await pool.query(`DELETE FROM player_resources WHERE user_id = ?`, [userId]);
 }

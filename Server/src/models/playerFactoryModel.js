@@ -1,5 +1,6 @@
 import pool from '../config/db.js';
 
+// Récupère toutes les usines possédées par un joueur
 export async function getPlayerFactories(userId) {
   const [rows] = await pool.query(
     `SELECT id, user_id, factory_id, level, created_at, updated_at
@@ -11,6 +12,7 @@ export async function getPlayerFactories(userId) {
   return rows;
 }
 
+// Récupère les usines actives d’un joueur pour le calcul de production idle
 export async function getPlayerFactoriesForIdle(userId) {
   const [rows] = await pool.query(
     `SELECT pf.factory_id, pf.level, f.resource_id, f.base_production, f.realm_id
@@ -22,6 +24,7 @@ export async function getPlayerFactoriesForIdle(userId) {
   return rows;
 }
 
+// Récupère une usine précise d’un joueur
 export async function getPlayerFactory(userId, factoryId) {
   const [rows] = await pool.query(
     `SELECT id, level
@@ -33,6 +36,7 @@ export async function getPlayerFactory(userId, factoryId) {
   return rows[0] || null;
 }
 
+// Ajoute une usine à un joueur avec un niveau initial
 export async function insertPlayerFactory(userId, factoryId, level) {
   await pool.query(
     `INSERT INTO player_factories (user_id, factory_id, level, created_at, updated_at)
@@ -41,6 +45,7 @@ export async function insertPlayerFactory(userId, factoryId, level) {
   );
 }
 
+// Met à jour le niveau d’une usine appartenant à un joueur
 export async function updatePlayerFactoryLevel(userId, factoryId, level) {
   await pool.query(
     `UPDATE player_factories

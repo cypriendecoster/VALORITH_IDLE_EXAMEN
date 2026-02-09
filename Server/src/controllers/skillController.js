@@ -1,4 +1,5 @@
-﻿import { getAllSkills, getSkillsByRealm } from '../models/skillModel.js';
+import { getAllSkills, getSkillsByRealm } from '../models/skillModel.js';
+import { toResponseError } from '../utils/errors.js';
 
 export async function getSkillsController(req, res) {
   try {
@@ -6,7 +7,12 @@ export async function getSkillsController(req, res) {
     return res.status(200).json(skills);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(
+      error,
+      'Impossible de charger les compétences.',
+      'SKILLS_FETCH_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
 
@@ -14,13 +20,20 @@ export async function getSkillsByRealmController(req, res) {
   try {
     const { realmId } = req.params;
     if (!realmId) {
-      return res.status(400).json({ message: 'Missing realmId' });
+      return res.status(400).json({
+        message: 'Identifiant de royaume manquant.',
+        code: 'REALM_ID_MISSING'
+      });
     }
     const skills = await getSkillsByRealm(realmId);
     return res.status(200).json(skills);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(
+      error,
+      'Impossible de charger les compétences.',
+      'SKILLS_FETCH_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
-

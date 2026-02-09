@@ -1,4 +1,5 @@
 import { getEndgameRanking, getResourceRanking } from '../models/rankingModel.js';
+import { toResponseError } from '../utils/errors.js';
 
 export async function getEndgameRankingController(req, res) {
   try {
@@ -7,7 +8,12 @@ export async function getEndgameRankingController(req, res) {
     return res.status(200).json(ranking);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(
+      error,
+      'Impossible de charger le classement.',
+      'ENDGAME_RANKING_FETCH_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
 
@@ -18,6 +24,11 @@ export async function getResourceRankingController(req, res) {
     return res.status(200).json(ranking);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(
+      error,
+      'Impossible de charger le classement.',
+      'RESOURCE_RANKING_FETCH_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }

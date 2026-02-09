@@ -12,7 +12,9 @@ import {
 import { deleteUserBadges } from '../models/userBadgeModel.js';
 import { deletePasswordResetTokensByUser } from '../models/passwordResetTokenModel.js';
 import { findByIdWithPassword, deleteUser } from '../models/userModel.js';
+import { createError } from '../utils/errors.js';
 
+// Supprime toutes les donnees de progression liees a un utilisateur
 async function deleteAllProgressData(userId) {
   await deleteUserBadges(userId);
   await deletePlayerResources(userId);
@@ -24,16 +26,25 @@ async function deleteAllProgressData(userId) {
   await deletePlayerSessions(userId);
 }
 
+// Reinitialise la progression du joueur apres verification du mot de passe
 export async function resetProgress(userId, password) {
   try {
     const user = await findByIdWithPassword(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw createError({
+        code: 'USER_NOT_FOUND',
+        message: 'Compte introuvable.',
+        status: 404
+      });
     }
 
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
-      throw new Error('Invalid credentials');
+      throw createError({
+        code: 'INVALID_CREDENTIALS',
+        message: 'Mot de passe incorrect.',
+        status: 401
+      });
     }
 
     await deleteAllProgressData(userId);
@@ -42,20 +53,36 @@ export async function resetProgress(userId, password) {
     return { status: 'ok' };
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Reset progress failed');
+    if (error && error.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'RESET_PROGRESS_FAILED',
+      message: 'Impossible de reinitialiser la progression.',
+      status: 500
+    });
   }
 }
 
+// Supprime definitivement le compte apres verification du mot de passe
 export async function deleteAccount(userId, password) {
   try {
     const user = await findByIdWithPassword(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw createError({
+        code: 'USER_NOT_FOUND',
+        message: 'Compte introuvable.',
+        status: 404
+      });
     }
 
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
-      throw new Error('Invalid credentials');
+      throw createError({
+        code: 'INVALID_CREDENTIALS',
+        message: 'Mot de passe incorrect.',
+        status: 401
+      });
     }
 
     await deletePasswordResetTokensByUser(userId);
@@ -65,6 +92,13 @@ export async function deleteAccount(userId, password) {
     return { status: 'ok' };
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Delete account failed');
+    if (error && error.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'DELETE_ACCOUNT_FAILED',
+      message: 'Impossible de supprimer le compte.',
+      status: 500
+    });
   }
 }

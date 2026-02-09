@@ -9,17 +9,26 @@ import {
 } from '../models/playerFactoryModel.js';
 import { getPlayerRealm } from '../models/playerRealmModel.js';
 import { buildSkillLevelMap, getFactorySkillModifiers } from './skillEffectsService.js';
+import { createError } from '../utils/errors.js';
 
 export async function upgradeFactory(userId, factoryId) {
   try {
     const factory = await getFactoryById(factoryId);
     if (!factory) {
-      throw new Error('Factory not found');
+      throw createError({
+        code: 'FACTORY_NOT_FOUND',
+        message: 'Usine introuvable.',
+        status: 404
+      });
     }
 
     const realm = await getPlayerRealm(userId, factory.realm_id);
     if (!realm) {
-      throw new Error('Realm not unlocked');
+      throw createError({
+        code: 'REALM_NOT_UNLOCKED',
+        message: 'Royaume non débloqué.',
+        status: 403
+      });
     }
 
     const playerFactory = await getPlayerFactory(userId, factory.id);
@@ -43,7 +52,11 @@ export async function upgradeFactory(userId, factoryId) {
     const total = currentAmount + currentCarry;
 
     if (total < cost) {
-      throw new Error('Not enough resources');
+      throw createError({
+        code: 'RESOURCES_INSUFFICIENT',
+        message: 'Ressources insuffisantes.',
+        status: 400
+      });
     }
 
     const newTotal = total - cost;
@@ -74,6 +87,13 @@ export async function upgradeFactory(userId, factoryId) {
     };
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Factory upgrade failed');
+    if (error?.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'FACTORY_UPGRADE_FAILED',
+      message: 'Impossible d’améliorer l’usine pour le moment.',
+      status: 500
+    });
   }
 }

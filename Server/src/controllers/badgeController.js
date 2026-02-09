@@ -1,4 +1,5 @@
 import { getAllBadges } from '../models/badgeModel.js';
+import { toResponseError } from '../utils/errors.js';
 
 export async function getBadgesController(req, res) {
   try {
@@ -6,6 +7,7 @@ export async function getBadgesController(req, res) {
     return res.status(200).json(badges);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(error, 'Impossible de charger les badges.', 'BADGES_FETCH_FAILED');
+    return res.status(status).json({ message, code });
   }
 }

@@ -1,4 +1,5 @@
-﻿import { getPlayerStats } from '../models/playerStatsModel.js';
+import { getPlayerStats } from '../models/playerStatsModel.js';
+import { toResponseError } from '../utils/errors.js';
 
 export async function getPlayerStatsController(req, res) {
   try {
@@ -6,7 +7,11 @@ export async function getPlayerStatsController(req, res) {
     return res.status(200).json(stats);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(
+      error,
+      'Impossible de charger les statistiques du joueur.',
+      'PLAYER_STATS_FETCH_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
-

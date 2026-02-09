@@ -4,6 +4,7 @@ import { getPlayerRealms, insertPlayerRealm, setActiveRealm } from '../models/pl
 import { getPlayerFactory, insertPlayerFactory } from '../models/playerFactoryModel.js';
 import { getPlayerResource, insertPlayerResource } from '../models/playerResourceModel.js';
 import { upsertPlayerState } from '../models/playerStateModel.js';
+import { createError } from '../utils/errors.js';
 
 export async function bootstrapNewPlayer(userId) {
   try {
@@ -14,14 +15,22 @@ export async function bootstrapNewPlayer(userId) {
 
     const realms = await getAllRealms();
     if (!realms.length) {
-      throw new Error('No realms found');
+      throw createError({
+        code: 'REALMS_MISSING',
+        message: 'Initialisation impossible: aucun royaume disponible.',
+        status: 500
+      });
     }
 
     const defaultRealm = realms.find((r) => r.is_default_unlocked === 1) || realms[0];
 
     const factories = await getFactoriesByRealm(defaultRealm.id);
     if (!factories.length) {
-      throw new Error('No factories found for default realm');
+      throw createError({
+        code: 'STARTER_FACTORY_MISSING',
+        message: 'Initialisation impossible: aucune usine de départ.',
+        status: 500
+      });
     }
 
     const starterFactory = factories[0];
@@ -52,7 +61,14 @@ export async function bootstrapNewPlayer(userId) {
     };
   } catch (error) {
     console.error(error);
-    throw new Error(error.message || 'Player bootstrap failed');
+    if (error?.code) {
+      throw error;
+    }
+    throw createError({
+      code: 'PLAYER_BOOTSTRAP_FAILED',
+      message: 'Impossible d’initialiser le joueur.',
+      status: 500
+    });
   }
 }
 

@@ -1,5 +1,6 @@
 import pool from '../config/db.js';
 
+// Récupère tous les coûts de déblocage des royaumes
 export async function getAllRealmUnlockCosts() {
   const [rows] = await pool.query(
     `SELECT id, target_realm_id, resource_id, amount
@@ -9,6 +10,7 @@ export async function getAllRealmUnlockCosts() {
   return rows;
 }
 
+// Récupère les coûts de déblocage pour un royaume précis
 export async function getRealmUnlockCostsByRealm(targetRealmId) {
   const [rows] = await pool.query(
     `SELECT id, target_realm_id, resource_id, amount

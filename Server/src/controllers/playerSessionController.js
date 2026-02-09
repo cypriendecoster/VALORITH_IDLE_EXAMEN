@@ -1,4 +1,5 @@
-﻿import { getPlayerSessions } from '../models/playerSessionModel.js';
+import { getPlayerSessions } from '../models/playerSessionModel.js';
+import { toResponseError } from '../utils/errors.js';
 
 export async function getPlayerSessionsController(req, res) {
   try {
@@ -6,7 +7,11 @@ export async function getPlayerSessionsController(req, res) {
     return res.status(200).json(sessions);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(
+      error,
+      'Impossible de charger les sessions du joueur.',
+      'PLAYER_SESSIONS_FETCH_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
-

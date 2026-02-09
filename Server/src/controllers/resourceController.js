@@ -1,4 +1,5 @@
-﻿import { getAllResources } from '../models/resourceModel.js';
+import { getAllResources } from '../models/resourceModel.js';
+import { toResponseError } from '../utils/errors.js';
 
 export async function getResourcesController(req, res) {
   try {
@@ -6,7 +7,11 @@ export async function getResourcesController(req, res) {
     return res.status(200).json(resources);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(
+      error,
+      'Impossible de charger les ressources.',
+      'RESOURCES_FETCH_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
-

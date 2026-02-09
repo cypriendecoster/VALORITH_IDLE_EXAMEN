@@ -1,5 +1,6 @@
 import pool from '../config/db.js';
 
+// Récupère le classement de fin de jeu
 export async function getEndgameRanking(limit = 50) {
   const [rows] = await pool.query(
     `SELECT
@@ -19,6 +20,7 @@ export async function getEndgameRanking(limit = 50) {
   return rows;
 }
 
+// Récupère le classement des joueurs selon les ressources cumulées
 export async function getResourceRanking(limit = 50) {
   const [rows] = await pool.query(
     `SELECT pr.user_id, u.username, SUM(pr.lifetime_amount) AS total_lifetime

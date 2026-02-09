@@ -1,4 +1,4 @@
-﻿import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import {
@@ -14,6 +14,7 @@ import {
   getPasswordResetToken,
   markPasswordResetTokenUsed
 } from '../models/passwordResetTokenModel.js';
+import { toResponseError } from '../utils/errors.js';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/;
@@ -36,31 +37,47 @@ export async function registerController(req, res) {
     const { email, username, password } = req.body;
 
     if (!email || !username || !password) {
-      return res.status(400).json({ message: 'Missing fields' });
+      return res.status(400).json({
+        message: 'Email, pseudo et mot de passe requis.',
+        code: 'AUTH_REGISTER_MISSING_FIELDS'
+      });
     }
 
     if (!isEmailValid(email)) {
-      return res.status(400).json({ message: 'Invalid email format' });
+      return res.status(400).json({
+        message: 'Email invalide.',
+        code: 'AUTH_INVALID_EMAIL'
+      });
     }
 
     if (!isUsernameValid(username)) {
-      return res.status(400).json({ message: 'Invalid username format' });
+      return res.status(400).json({
+        message: 'Pseudo invalide: 3 à 20 caractères, lettres/chiffres/underscore.',
+        code: 'AUTH_INVALID_USERNAME'
+      });
     }
 
     if (!isPasswordValid(password)) {
       return res.status(400).json({
-        message: 'Password must be at least 8 characters with upper, lower, and number.'
+        message: 'Mot de passe: 8 caractères minimum, avec une majuscule, une minuscule et un chiffre.',
+        code: 'AUTH_WEAK_PASSWORD'
       });
     }
 
     const existingEmail = await findByEmail(email);
     if (existingEmail) {
-      return res.status(400).json({ message: 'Email already in use' });
+      return res.status(400).json({
+        message: 'Email déjà utilisé.',
+        code: 'AUTH_EMAIL_IN_USE'
+      });
     }
 
     const existingUsername = await findByUsername(username);
     if (existingUsername) {
-      return res.status(400).json({ message: 'Username already in use' });
+      return res.status(400).json({
+        message: 'Pseudo déjà utilisé.',
+        code: 'AUTH_USERNAME_IN_USE'
+      });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -82,9 +99,12 @@ export async function registerController(req, res) {
     return res.status(201).json({ token });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      message: error.message || 'Internal server error'
-    });
+    const { status, message, code } = toResponseError(
+      error,
+      'Erreur lors de l’inscription.',
+      'AUTH_REGISTER_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
 
@@ -93,17 +113,26 @@ export async function loginController(req, res) {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Missing fields' });
+      return res.status(400).json({
+        message: 'Email et mot de passe requis.',
+        code: 'AUTH_LOGIN_MISSING_FIELDS'
+      });
     }
 
     const user = await findByEmail(email);
     if (!user) {
-      return res.status(401).json({ message: 'Account not found' });
+      return res.status(401).json({
+        message: 'Compte introuvable.',
+        code: 'AUTH_ACCOUNT_NOT_FOUND'
+      });
     }
 
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
-      return res.status(401).json({ message: 'Incorrect password' });
+      return res.status(401).json({
+        message: 'Mot de passe incorrect.',
+        code: 'AUTH_INCORRECT_PASSWORD'
+      });
     }
 
     await updateLastLogin(user.id);
@@ -117,19 +146,23 @@ export async function loginController(req, res) {
     return res.status(200).json({ token });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      message: error.message || 'Internal server error'
-    });
+    const { status, message, code } = toResponseError(
+      error,
+      'Erreur de connexion.',
+      'AUTH_LOGIN_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
-
-
 
 export async function requestPasswordResetController(req, res) {
   try {
     const { email } = req.body;
     if (!email) {
-      return res.status(400).json({ message: 'Missing email' });
+      return res.status(400).json({
+        message: 'Email requis.',
+        code: 'AUTH_RESET_EMAIL_MISSING'
+      });
     }
 
     const user = await findByEmail(email);
@@ -154,9 +187,12 @@ export async function requestPasswordResetController(req, res) {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      message: error.message || 'Internal server error'
-    });
+    const { status, message, code } = toResponseError(
+      error,
+      'Erreur lors de la demande de réinitialisation.',
+      'AUTH_RESET_REQUEST_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
 
@@ -164,35 +200,48 @@ export async function resetPasswordController(req, res) {
   try {
     const { token, password } = req.body;
     if (!token || !password) {
-      return res.status(400).json({ message: 'Missing fields' });
+      return res.status(400).json({
+        message: 'Token et mot de passe requis.',
+        code: 'AUTH_RESET_MISSING_FIELDS'
+      });
     }
 
     if (!isPasswordValid(password)) {
       return res.status(400).json({
-        message: 'Password must be at least 8 characters with upper, lower, and number.'
+        message: 'Mot de passe: 8 caractères minimum, avec une majuscule, une minuscule et un chiffre.',
+        code: 'AUTH_WEAK_PASSWORD'
       });
     }
 
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
     const record = await getPasswordResetToken(tokenHash);
     if (!record || record.used_at) {
-      return res.status(400).json({ message: 'Invalid or used token' });
+      return res.status(400).json({
+        message: 'Lien invalide ou déjà utilisé.',
+        code: 'AUTH_RESET_TOKEN_INVALID'
+      });
     }
 
     const expiresAt = new Date(record.expires_at);
     if (expiresAt < new Date()) {
-      return res.status(400).json({ message: 'Token expired' });
+      return res.status(400).json({
+        message: 'Lien expiré.',
+        code: 'AUTH_RESET_TOKEN_EXPIRED'
+      });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
     await updateUserPassword(record.user_id, passwordHash);
     await markPasswordResetTokenUsed(record.id);
 
-    return res.status(200).json({ message: 'Password updated' });
+    return res.status(200).json({ message: 'Mot de passe mis à jour.' });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      message: error.message || 'Internal server error'
-    });
+    const { status, message, code } = toResponseError(
+      error,
+      'Erreur lors de la réinitialisation du mot de passe.',
+      'AUTH_RESET_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }

@@ -1,5 +1,6 @@
 import pool from '../config/db.js';
 
+// Récupère toutes les compétences débloquées par un joueur
 export async function getPlayerSkills(userId) {
   const [rows] = await pool.query(
     `SELECT id, user_id, skill_id, level, unlocked_at, updated_at
@@ -11,6 +12,7 @@ export async function getPlayerSkills(userId) {
   return rows;
 }
 
+//Récupére une compétence précise d'un joueur
 export async function getPlayerSkill(userId, skillId) {
   const [rows] = await pool.query(
     `SELECT id, level
@@ -22,6 +24,7 @@ export async function getPlayerSkill(userId, skillId) {
   return rows[0] || null;
 }
 
+// Ajoute une compétence à un joueur avec un niveau initial
 export async function insertPlayerSkill(userId, skillId, level) {
   await pool.query(
     `INSERT INTO player_skills (user_id, skill_id, level, unlocked_at, updated_at)
@@ -29,6 +32,8 @@ export async function insertPlayerSkill(userId, skillId, level) {
     [userId, skillId, level]
   );
 }
+
+// Met à jour le niveau d'une compétence appartenant à un joueur
 
 export async function updatePlayerSkillLevel(userId, skillId, level) {
   await pool.query(
@@ -38,3 +43,4 @@ export async function updatePlayerSkillLevel(userId, skillId, level) {
     [level, userId, skillId]
   );
 }
+

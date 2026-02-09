@@ -1,4 +1,5 @@
 import { getAllEndgameRequirements } from '../models/endgameRequirementModel.js';
+import { toResponseError } from '../utils/errors.js';
 
 export async function getEndgameRequirementsController(req, res) {
   try {
@@ -6,6 +7,11 @@ export async function getEndgameRequirementsController(req, res) {
     return res.status(200).json(requirements);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: error.message || 'Internal server error' });
+    const { status, message, code } = toResponseError(
+      error,
+      'Impossible de charger les conditions de fin de jeu.',
+      'ENDGAME_REQUIREMENTS_FETCH_FAILED'
+    );
+    return res.status(status).json({ message, code });
   }
 }
