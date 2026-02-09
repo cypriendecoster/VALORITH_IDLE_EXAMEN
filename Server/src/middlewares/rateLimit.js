@@ -1,5 +1,6 @@
 const buckets = new Map();
 
+// Nettoie les anciennes requêtes en dehors de la fenêtre de temps
 function cleanupBucket(bucket, now, windowMs) {
   const cutoff = now - windowMs;
   while (bucket.timestamps.length && bucket.timestamps[0] < cutoff) {
@@ -7,6 +8,7 @@ function cleanupBucket(bucket, now, windowMs) {
   }
 }
 
+// Middleware de limitation de requêtes (rate limiting)
 export function rateLimit({ windowMs = 60000, max = 10, keyPrefix = 'rl' } = {}) {
   return (req, res, next) => {
     const now = Date.now();
