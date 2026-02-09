@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useRequireAuth } from '../hooks/useRequireAuth.js';
 import {
   getAdminTables,
@@ -8,6 +9,7 @@ import {
   updateAdminRow,
   deleteAdminRow
 } from '../services/adminService.js';
+import { formatDateTime } from '../utils/format.js';
 
 function buildInitialForm(columns) {
   const form = {};
@@ -25,8 +27,25 @@ export default function Admin() {
   const [rows, setRows] = useState([]);
   const [form, setForm] = useState({});
   const [editingId, setEditingId] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const tableLabels = useMemo(
+    () => ({
+      users: 'Utilisateurs',
+      realms: 'Royaumes'
+    }),
+    []
+  );
+  const hiddenColumns = useMemo(
+    () => ({
+      users: new Set(['password_hash'])
+    }),
+    []
+  );
 
   useRequireAuth({ role: 'ADMIN', redirectTo: '/login', unauthorizedTo: '/game' });
 
@@ -35,10 +54,11 @@ export default function Admin() {
       try {
         setLoading(true);
         const data = await getAdminTables();
-        setTables(data);
-        if (data.length > 0) {
-          setSelectedTable(data[0]);
-        }
+        const allowed = data.filter((t) => {
+          const name = String(t || '').toLowerCase();
+          return name === 'users' || name === 'realms';
+        });
+        setTables(allowed);
       } catch (err) {
         setError(err.message || 'Erreur');
       } finally {
@@ -49,12 +69,24 @@ export default function Admin() {
   }, []);
 
   useEffect(() => {
+    if (tables.length === 0) return;
+    const paramTable = new URLSearchParams(location.search).get('table');
+    if (paramTable && tables.includes(paramTable) && paramTable !== selectedTable) {
+      setSelectedTable(paramTable);
+      return;
+    }
+    if (!selectedTable) {
+      setSelectedTable(tables[0]);
+    }
+  }, [tables, location.search, selectedTable]);
+
+  useEffect(() => {
     async function loadTableData() {
       if (!selectedTable) return;
       try {
         setLoading(true);
         const schemaData = await getAdminTableSchema(selectedTable);
-        const rowData = await listAdminRows(selectedTable, 50, 0);
+        const rowData = await listAdminRows(selectedTable);
         setSchema(schemaData);
         setRows(rowData || []);
         setForm(buildInitialForm(schemaData.columns));
@@ -68,7 +100,11 @@ export default function Admin() {
     loadTableData();
   }, [selectedTable]);
 
-  const columns = useMemo(() => schema?.columns || [], [schema]);
+  const columns = useMemo(() => {
+    const cols = schema?.columns || [];
+    const hidden = hiddenColumns[selectedTable];
+    return hidden ? cols.filter((c) => !hidden.has(c.COLUMN_NAME)) : cols;
+  }, [schema, hiddenColumns, selectedTable]);
   const pkColumn = schema?.pk || 'id';
 
   function onEdit(row) {
@@ -84,17 +120,49 @@ export default function Admin() {
     e.preventDefault();
     try {
       setError('');
-      if (editingId) {
-        await updateAdminRow(selectedTable, editingId, form);
-      } else {
-        await createAdminRow(selectedTable, form);
+      setSaving(true);
+      if (columns.length === 0) return;
+      const payload = {};
+      let hasValue = false;
+      for (const col of columns) {
+        if (col.EXTRA && col.EXTRA.includes('auto_increment')) continue;
+        const name = col.COLUMN_NAME;
+        const type = String(col.DATA_TYPE || '').toLowerCase();
+        const raw = form[name];
+        const isReadonlyDate = ['created_at', 'updated_at', 'last_login_at'].includes(name);
+        if (isReadonlyDate) {
+          continue;
+        }
+        if (raw === '' || raw === null || typeof raw === 'undefined') {
+          payload[name] = null;
+          continue;
+        }
+        hasValue = true;
+        if (['int', 'bigint', 'decimal', 'float', 'double'].includes(type)) {
+          payload[name] = Number(raw);
+        } else if (['tinyint', 'bit', 'boolean'].includes(type)) {
+          payload[name] = raw === '1' || raw === 1 || raw === true ? 1 : 0;
+        } else {
+          payload[name] = raw;
+        }
       }
-      const rowData = await listAdminRows(selectedTable, 50, 0);
+      if (!hasValue) {
+        setError('Veuillez remplir au moins un champ.');
+        return;
+      }
+      if (editingId) {
+        await updateAdminRow(selectedTable, editingId, payload);
+      } else {
+        await createAdminRow(selectedTable, payload);
+      }
+      const rowData = await listAdminRows(selectedTable);
       setRows(rowData || []);
       setEditingId(null);
       setForm(buildInitialForm(columns));
     } catch (err) {
       setError(err.message || 'Erreur');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -105,11 +173,14 @@ export default function Admin() {
         return;
       }
       setError('');
+      setDeletingId(rowId);
       await deleteAdminRow(selectedTable, rowId);
-      const rowData = await listAdminRows(selectedTable, 50, 0);
+      const rowData = await listAdminRows(selectedTable);
       setRows(rowData || []);
     } catch (err) {
       setError(err.message || 'Erreur');
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -118,7 +189,8 @@ export default function Admin() {
       <div className="pointer-events-none fixed inset-0 -z-10">
         <img
           src="/HERO_HEADER/HERO_HEADER_ACCUEIL.png"
-          alt="Valorith"
+          alt=""
+          aria-hidden="true"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black/45"></div>
@@ -127,7 +199,7 @@ export default function Admin() {
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <h1 className="text-3xl font-heading">Admin</h1>
         <p className="mt-2 text-[var(--color-muted)]">
-          Gestion complete des tables.
+          Gestion complète des tables.
         </p>
 
         {loading && (
@@ -149,45 +221,131 @@ export default function Admin() {
                 {tables.map((t) => (
                   <button
                     key={t}
-                    className={`text-left ${t === selectedTable ? 'text-[var(--color-text)]' : ''}`}
-                    onClick={() => setSelectedTable(t)}
+                    className={`text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 ${t === selectedTable ? 'text-[var(--color-text)]' : ''}`}
+                    onClick={() => {
+                      setSelectedTable(t);
+                      navigate(`/admin?table=${encodeURIComponent(t)}`);
+                    }}
                   >
-                    {t}
+                    {tableLabels[t] || t}
                   </button>
                 ))}
               </div>
             </section>
 
             <section className="md:col-span-2 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-panel)]/85 p-4">
-              <h2 className="text-sm font-heading">
-                {selectedTable || 'Table'}
-              </h2>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="text-sm font-heading">
+                  {tableLabels[selectedTable] || selectedTable || 'Table'}
+                </h2>
+                <div className="text-xs text-[var(--color-muted)]">
+                  Toutes les lignes
+                </div>
+              </div>
 
               {schema && (
                 <form className="mt-4 grid gap-3" onSubmit={onSave}>
-                  {columns.map((col) => {
+                  {columns
+                    .filter((col) => {
+                      const isAuto = col.EXTRA && col.EXTRA.includes('auto_increment');
+                      const isDate = ['created_at', 'updated_at', 'last_login_at'].includes(col.COLUMN_NAME);
+                      if (!editingId && (isAuto || isDate)) return false;
+                      return true;
+                    })
+                    .map((col) => {
                     const name = col.COLUMN_NAME;
                     const isPk = name === pkColumn;
                     const isAuto = col.EXTRA && col.EXTRA.includes('auto_increment');
-                    const disabled = isPk && editingId ? true : isAuto;
+                    const isReadonlyDate = ['created_at', 'updated_at', 'last_login_at'].includes(name);
+                    const disabled = isPk && editingId ? true : isAuto || isReadonlyDate;
+                    const isRoleField = selectedTable === 'users' && name === 'role';
+                    const isRealmToggle = selectedTable === 'realms' && name === 'is_default_unlocked';
+                    const isRealmMultiplier =
+                      selectedTable === 'realms' &&
+                      (name === 'cost_multiplier' || name === 'production_multiplier');
+                    const isDescriptionField = name === 'description';
+                    const isRealmCode = selectedTable === 'realms' && name === 'code';
                     return (
                       <label key={name} className="grid gap-1 text-xs text-[var(--color-muted)]">
                         <span>{name}</span>
-                        <input
-                          className="input-base w-full"
-                          value={form[name] ?? ''}
-                          disabled={disabled}
-                          onChange={(e) =>
-                            setForm((prev) => ({ ...prev, [name]: e.target.value }))
-                          }
-                        />
+                        {isRoleField ? (
+                          <select
+                            className="input-base w-full"
+                            value={form[name] ?? 'PLAYER'}
+                            disabled={disabled}
+                            onChange={(e) =>
+                              setForm((prev) => ({ ...prev, [name]: e.target.value }))
+                            }
+                          >
+                            <option value="PLAYER">PLAYER</option>
+                            <option value="ADMIN">ADMIN</option>
+                          </select>
+                        ) : isRealmToggle ? (
+                          <label className="flex items-center gap-2 text-xs text-[var(--color-text)]">
+                            <input
+                              type="checkbox"
+                              className="h-4 w-4 accent-[var(--color-gold)]"
+                              checked={Boolean(Number(form[name] ?? 0))}
+                              disabled={disabled}
+                              onChange={(e) =>
+                                setForm((prev) => ({ ...prev, [name]: e.target.checked ? 1 : 0 }))
+                              }
+                            />
+                            {Number(form[name] ?? 0) ? 'Débloqué par défaut' : 'Non débloqué'}
+                          </label>
+                        ) : isRealmMultiplier ? (
+                          <input
+                            className="input-base w-full"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={form[name] ?? ''}
+                            disabled={disabled}
+                            onChange={(e) =>
+                              setForm((prev) => ({ ...prev, [name]: e.target.value }))
+                            }
+                          />
+                        ) : isDescriptionField ? (
+                          <textarea
+                            className="input-base w-full min-h-[90px] resize-y"
+                            value={form[name] ?? ''}
+                            disabled={disabled}
+                            onChange={(e) =>
+                              setForm((prev) => ({ ...prev, [name]: e.target.value }))
+                            }
+                          />
+                        ) : isRealmCode ? (
+                          <input
+                            className="input-base w-full uppercase"
+                            value={form[name] ?? ''}
+                            disabled={disabled}
+                            onChange={(e) => {
+                              const next = e.target.value.toUpperCase().replace(/[^A-Z_]/g, '');
+                              setForm((prev) => ({ ...prev, [name]: next }));
+                            }}
+                          />
+                        ) : (
+                          <input
+                            className="input-base w-full"
+                            value={
+                              isReadonlyDate
+                                ? formatDateTime(form[name])
+                                : form[name] ?? ''
+                            }
+                            disabled={disabled}
+                            onChange={(e) =>
+                              setForm((prev) => ({ ...prev, [name]: e.target.value }))
+                            }
+                          />
+                        )}
                       </label>
                     );
                   })}
                   <button
-                    className="mt-2 w-full rounded-[var(--radius-md)] bg-[var(--color-gold)] px-4 py-2 text-sm font-semibold text-black"
+                    className="mt-2 w-full rounded-[var(--radius-md)] bg-[var(--color-gold)] px-4 py-2 text-sm font-semibold text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 disabled:opacity-60"
+                    disabled={saving}
                   >
-                    {editingId ? 'Mettre a jour' : 'Creer'}
+                    {saving ? 'Enregistrement...' : editingId ? 'Mettre à jour' : 'Créer'}
                   </button>
                 </form>
               )}
@@ -203,22 +361,53 @@ export default function Admin() {
                       <span>{pkColumn}: {row[pkColumn]}</span>
                       <div className="flex gap-2">
                         <button
-                          className="text-[var(--color-muted)]"
+                          className="inline-flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-border)] px-2 py-1 text-xs text-[var(--color-text)] hover:border-[var(--color-gold)]/60 hover:text-[var(--color-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 disabled:opacity-60"
                           onClick={() => onEdit(row)}
+                          disabled={saving}
                         >
-                          Edit
+                          Modifier
                         </button>
                         <button
-                          className="text-red-400"
+                          className="inline-flex items-center justify-center rounded-[var(--radius-sm)] border border-red-500/40 bg-red-600/10 px-2 py-1 text-xs text-red-100 hover:bg-red-600/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 disabled:opacity-60"
                           onClick={() => onDelete(row[pkColumn])}
+                          disabled={deletingId === row[pkColumn]}
                         >
-                          Delete
+                          {deletingId === row[pkColumn] ? 'Suppression...' : 'Supprimer'}
                         </button>
                       </div>
                     </div>
-                    <pre className="mt-2 overflow-x-auto text-[10px] text-[var(--color-muted)]">
-                      {JSON.stringify(row, null, 2)}
-                    </pre>
+                    <div className="mt-2 grid gap-2 text-xs text-[var(--color-muted)]">
+                      {selectedTable === 'realms' && (
+                        <div className="grid gap-1">
+                          <p className="text-sm font-heading text-[var(--color-text)]">
+                            {row.name || 'Royaume'}
+                          </p>
+                          <p className="text-xs text-[var(--color-text)]/70">
+                            Code: {row.code || 'N/A'}
+                          </p>
+                        </div>
+                      )}
+                      {columns
+                        .filter((col) =>
+                          selectedTable === 'realms'
+                            ? !['name', 'code'].includes(col.COLUMN_NAME)
+                            : true
+                        )
+                        .map((col) => {
+                          const name = col.COLUMN_NAME;
+                          const value = ['created_at', 'updated_at', 'last_login_at'].includes(name)
+                            ? formatDateTime(row[name])
+                            : String(row[name] ?? '');
+                          return (
+                            <div key={name} className="grid grid-cols-[140px_1fr] gap-2">
+                              <span className="truncate text-[var(--color-text)]/80">{name}</span>
+                              <span className="truncate text-right" title={value}>
+                                {value}
+                              </span>
+                            </div>
+                          );
+                        })}
+                    </div>
                   </div>
                 ))}
               </div>

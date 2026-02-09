@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { formatCompact, formatNumber } from '../utils/format.js';
 
 const baseLinkClass =
   'text-[var(--color-muted)] hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-black/60';
@@ -9,19 +10,6 @@ const activeLinkClass =
 function linkClass(isActive) {
   return `${baseLinkClass} ${isActive ? activeLinkClass : ''}`.trim();
 }
-
-const formatNumber = (value) =>
-  new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(value || 0));
-const formatCompact = (value) => {
-  const numeric = Number(value || 0);
-  const abs = Math.abs(numeric);
-  if (!Number.isFinite(numeric)) return '0';
-  if (abs >= 1e12) return `${formatNumber(numeric / 1e12)} Bn`;
-  if (abs >= 1e9) return `${formatNumber(numeric / 1e9)} Md`;
-  if (abs >= 1e6) return `${formatNumber(numeric / 1e6)} M`;
-  if (abs >= 1e3) return `${formatNumber(numeric / 1e3)} K`;
-  return formatNumber(numeric);
-};
 
 export default function PlayerNavbar({ activeRealmName, totalResources, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);

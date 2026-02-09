@@ -64,7 +64,7 @@ export default function Login() {
       await handleLogin({ email, password }, { remember: rememberMe });
       navigate('/game');
     } catch (err) {
-      setValidationError('Identifiants invalides.');
+      setValidationError(err?.message || 'Une erreur est survenue.');
     }
   }
 

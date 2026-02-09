@@ -1,4 +1,5 @@
 import api from './api.js';
+import { buildApiError } from '../utils/apiError.js';
 
 export async function getEndgameRanking(limit = 50) {
   try {
@@ -6,6 +7,6 @@ export async function getEndgameRanking(limit = 50) {
     return response.data;
   } catch (error) {
     console.error(error);
-    throw new Error(error.response?.data?.message || 'API error');
+    throw buildApiError(error, 'Impossible de charger le classement.');
   }
 }

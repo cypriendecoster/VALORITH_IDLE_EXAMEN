@@ -1,4 +1,5 @@
-﻿import api from './api.js';
+import api from './api.js';
+import { buildApiError } from '../utils/apiError.js';
 
 export async function getGameSnapshot() {
   try {
@@ -6,7 +7,7 @@ export async function getGameSnapshot() {
     return response.data;
   } catch (error) {
     console.error(error);
-    throw new Error(error.response?.data?.message || 'API error');
+    throw buildApiError(error, 'Impossible de charger le jeu.');
   }
 }
 
@@ -16,7 +17,7 @@ export async function idleTick() {
     return response.data;
   } catch (error) {
     console.error(error);
-    throw new Error(error.response?.data?.message || 'API error');
+    throw buildApiError(error, 'Impossible de calculer le hors-ligne.');
   }
 }
 
@@ -26,7 +27,7 @@ export async function upgradeFactory(factoryId) {
     return response.data;
   } catch (error) {
     console.error(error);
-    throw new Error(error.response?.data?.message || 'API error');
+    throw buildApiError(error, 'Impossible d’améliorer l’usine.');
   }
 }
 
@@ -36,7 +37,7 @@ export async function unlockRealm(realmId) {
     return response.data;
   } catch (error) {
     console.error(error);
-    throw new Error(error.response?.data?.message || 'API error');
+    throw buildApiError(error, 'Impossible de débloquer le royaume.');
   }
 }
 
@@ -46,9 +47,6 @@ export async function upgradeSkill(skillId) {
     return response.data;
   } catch (error) {
     console.error(error);
-    throw new Error(error.response?.data?.message || 'API error');
+    throw buildApiError(error, 'Impossible d’améliorer la compétence.');
   }
 }
-
-
-

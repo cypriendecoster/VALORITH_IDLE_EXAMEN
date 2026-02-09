@@ -1,3 +1,5 @@
+import { formatCompact, formatNumber } from '../../utils/format.js';
+
 export default function RealmPanel({
   realms,
   loading,
@@ -9,18 +11,6 @@ export default function RealmPanel({
   playerResources,
   inlineError
 }) {
-  const formatNumber = (value) =>
-    new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(value || 0));
-  const formatCompact = (value) => {
-    const numeric = Number(value || 0);
-    const abs = Math.abs(numeric);
-    if (!Number.isFinite(numeric)) return '0';
-    if (abs >= 1e12) return `${formatNumber(numeric / 1e12)} Bn`;
-    if (abs >= 1e9) return `${formatNumber(numeric / 1e9)} Md`;
-    if (abs >= 1e6) return `${formatNumber(numeric / 1e6)} M`;
-    if (abs >= 1e3) return `${formatNumber(numeric / 1e3)} K`;
-    return formatNumber(numeric);
-  };
   const unlockedIds = new Set((playerRealms || []).map((r) => r.realm_id));
   const activeRealmId = (playerRealms || []).find((r) => r.is_active === 1)?.realm_id ?? null;
   const resourceNameById = new Map((resources || []).map((r) => [r.id, r.name]));

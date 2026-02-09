@@ -1,4 +1,5 @@
-﻿import axios from 'axios';
+import axios from 'axios';
+import { buildApiError } from '../utils/apiError.js';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -21,7 +22,6 @@ export async function ping() {
     return response.data;
   } catch (error) {
     console.error(error);
-    throw new Error(error.response?.data?.message || 'API error');
+    throw buildApiError(error, 'Impossible de joindre le serveur.');
   }
 }
-

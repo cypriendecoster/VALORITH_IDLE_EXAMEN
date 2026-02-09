@@ -1,25 +1,5 @@
-const normalizeKey = (value = '') =>
-  value
-    .toLowerCase()
-    .replace(/[œ]/g, 'oe')
-    .replace(/[æ]/g, 'ae')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim();
-
-const formatNumber = (value) =>
-  new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(value || 0));
-const formatCompact = (value) => {
-  const numeric = Number(value || 0);
-  const abs = Math.abs(numeric);
-  if (!Number.isFinite(numeric)) return '0';
-  if (abs >= 1e12) return `${formatNumber(numeric / 1e12)} Bn`;
-  if (abs >= 1e9) return `${formatNumber(numeric / 1e9)} Md`;
-  if (abs >= 1e6) return `${formatNumber(numeric / 1e6)} M`;
-  if (abs >= 1e3) return `${formatNumber(numeric / 1e3)} K`;
-  return formatNumber(numeric);
-};
+import { formatCompact, formatNumber } from '../../utils/format.js';
+import { normalizeKey } from '../../utils/text.js';
 
 const formatTitle = (value = '') =>
   value

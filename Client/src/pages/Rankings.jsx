@@ -1,20 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getEndgameRanking } from '../services/rankingService.js';
-
-function formatDuration(seconds) {
-  const total = Number(seconds);
-  if (!Number.isFinite(total) || total < 0) return 'N/A';
-  const days = Math.floor(total / 86400);
-  const hours = Math.floor((total % 86400) / 3600);
-  const minutes = Math.floor((total % 3600) / 60);
-  const secs = Math.floor(total % 60);
-  const parts = [];
-  if (days > 0) parts.push(`${days}j`);
-  if (hours > 0 || days > 0) parts.push(`${hours}h`);
-  if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}m`);
-  parts.push(`${secs}s`);
-  return parts.join(' ');
-}
+import { formatDurationHms } from '../utils/format.js';
+import { normalizeError } from '../utils/errors.js';
 
 export default function Rankings() {
   const [endgame, setEndgame] = useState([]);
@@ -28,7 +15,7 @@ export default function Rankings() {
       const endgameData = await getEndgameRanking(50);
       setEndgame(endgameData || []);
     } catch (err) {
-      setError(err.message || 'API error');
+      setError(normalizeError(err));
     } finally {
       setLoading(false);
     }
@@ -101,7 +88,7 @@ export default function Rankings() {
                       #{index + 1} {row.username || 'Joueur'}
                     </span>
                     <span className="text-left tabular-nums sm:text-right sm:whitespace-nowrap">
-                      {formatDuration(row.duration_seconds)}
+                      {formatDurationHms(row.duration_seconds)}
                     </span>
                   </div>
                 ))}

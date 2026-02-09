@@ -1,16 +1,6 @@
+import { formatCompact, formatNumber } from '../../utils/format.js';
+
 export default function ResourcesPanel({ data, loading, error }) {
-  const formatNumber = (value) =>
-    new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(value || 0));
-  const formatCompact = (value) => {
-    const numeric = Number(value || 0);
-    const abs = Math.abs(numeric);
-    if (!Number.isFinite(numeric)) return '0';
-    if (abs >= 1e12) return `${formatNumber(numeric / 1e12)} Bn`;
-    if (abs >= 1e9) return `${formatNumber(numeric / 1e9)} Md`;
-    if (abs >= 1e6) return `${formatNumber(numeric / 1e6)} M`;
-    if (abs >= 1e3) return `${formatNumber(numeric / 1e3)} K`;
-    return formatNumber(numeric);
-  };
   const activeRealmId = data?.player?.realms?.find((r) => r.is_active === 1)?.realm_id ??
     data?.player?.realms?.[0]?.realm_id ?? null;
   const factoriesInRealm = data?.factories

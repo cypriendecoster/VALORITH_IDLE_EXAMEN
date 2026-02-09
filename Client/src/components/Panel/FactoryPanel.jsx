@@ -1,27 +1,7 @@
-const normalizeKey = (value = '') =>
-  value
-    .toLowerCase()
-    .replace(/[œ]/g, 'oe')
-    .replace(/[æ]/g, 'ae')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim();
+import { formatCompact, formatNumber } from '../../utils/format.js';
+import { normalizeKey } from '../../utils/text.js';
 
 export default function FactoryPanel({ data, loading, error, onUpgrade, inlineError }) {
-  const formatNumber = (value) =>
-    new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 }).format(Number(value || 0));
-  const formatCompact = (value) => {
-    const numeric = Number(value || 0);
-    const abs = Math.abs(numeric);
-    if (!Number.isFinite(numeric)) return '0';
-    if (abs >= 1e12) return `${formatNumber(numeric / 1e12)} Bn`;
-    if (abs >= 1e9) return `${formatNumber(numeric / 1e9)} Md`;
-    if (abs >= 1e6) return `${formatNumber(numeric / 1e6)} M`;
-    if (abs >= 1e3) return `${formatNumber(numeric / 1e3)} K`;
-    return formatNumber(numeric);
-  };
-
   const activeRealmId = data?.player?.realms?.find((r) => r.is_active === 1)?.realm_id ??
     data?.player?.realms?.[0]?.realm_id ?? null;
   const activeRealm = data?.realms?.find((r) => r.id === activeRealmId);
@@ -68,8 +48,8 @@ export default function FactoryPanel({ data, loading, error, onUpgrade, inlineEr
         <h2 className="font-heading text-xl">Usines</h2>
         <div className="flex items-center gap-3 text-xs text-[var(--color-muted)]">
           <span>Actives: {activeFactories.length}</span>
-          <span title={formatNumber(Math.floor(totalProduction))}>
-            Prod/s: {formatCompact(Math.floor(totalProduction))}
+          <span title={formatNumber(Math.floor(totalProduction), 2)}>
+            Prod/s: {formatCompact(Math.floor(totalProduction), 2)}
           </span>
         </div>
       </div>
@@ -145,31 +125,31 @@ export default function FactoryPanel({ data, loading, error, onUpgrade, inlineEr
                     <span className="text-xs uppercase tracking-wide text-[var(--color-text)]/80">Prod</span>
                     <span
                       className="text-sm font-semibold text-[var(--color-text)]"
-                      title={`${isUnlocked ? formatNumber(f.production) : '0'} ${costResourceName} / s`}
+                      title={`${isUnlocked ? formatNumber(f.production, 2) : '0'} ${costResourceName} / s`}
                     >
-                      {isUnlocked ? formatCompact(f.production) : '0'} / s
+                      {isUnlocked ? formatCompact(f.production, 2) : '0'} / s
                     </span>
                   </div>
                   {isUnlocked && (
                     <>
                       <div className="grid grid-cols-[52px_1fr] items-baseline gap-2 text-xs">
                         <span className="text-xs uppercase tracking-wide text-[var(--color-text)]/80">Base</span>
-                        <span title={`${formatNumber(Math.floor(baseProduction))}`}>
-                          {formatCompact(Math.floor(baseProduction))}
+                        <span title={`${formatNumber(Math.floor(baseProduction), 2)}`}>
+                          {formatCompact(Math.floor(baseProduction), 2)}
                         </span>
                       </div>
                       <div className="grid grid-cols-[52px_1fr] items-baseline gap-2 text-xs">
                         <span className="text-xs uppercase tracking-wide text-[var(--color-text)]/80">Bonus</span>
-                        <span title={`${formatNumber(Math.floor(bonusProduction))}`}>
-                          {formatCompact(Math.floor(bonusProduction))}
+                        <span title={`${formatNumber(Math.floor(bonusProduction), 2)}`}>
+                          {formatCompact(Math.floor(bonusProduction), 2)}
                         </span>
                       </div>
                     </>
                   )}
                   <div className="grid grid-cols-[52px_1fr] items-baseline gap-2 text-xs">
                     <span className="text-xs uppercase tracking-wide text-[var(--color-text)]/80">Coût</span>
-                    <span title={`${formatNumber(f.cost)} ${costResourceName}`}>
-                      {formatCompact(f.cost)}
+                    <span title={`${formatNumber(f.cost, 2)} ${costResourceName}`}>
+                      {formatCompact(f.cost, 2)}
                     </span>
                   </div>
                 </div>

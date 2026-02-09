@@ -56,23 +56,11 @@ export default function AdminNavbar({ onLogout }) {
             |
           </span>
           <div className="hidden items-center gap-4 md:flex">
-            <NavLink className={() => linkClass(isTableActive('Utilisateurs'))} to="/admin?table=Utilisateurs">
+            <NavLink className={() => linkClass(isTableActive('users'))} to="/admin?table=users">
               Utilisateurs
             </NavLink>
-            <NavLink className={() => linkClass(isTableActive('skills'))} to="/admin?table=skills">
-              Tables/CRUD
-            </NavLink>
-            <NavLink
-              className={() => linkClass(isTableActive('support_tickets'))}
-              to="/admin?table=support_tickets"
-            >
-              Tickets support
-            </NavLink>
-            <NavLink
-              className={() => linkClass(isTableActive('system_settings'))}
-              to="/admin?table=system_settings"
-            >
-              Paramètres système
+            <NavLink className={() => linkClass(isTableActive('realms'))} to="/admin?table=realms">
+              Royaumes
             </NavLink>
           </div>
         </div>
@@ -121,34 +109,18 @@ export default function AdminNavbar({ onLogout }) {
           <NavLink
             role="menuitem"
             onClick={() => setMenuOpen(false)}
-            className={() => linkClass(isTableActive('Utilisateurs'))}
-            to="/admin?table=Utilisateurs"
+            className={() => linkClass(isTableActive('users'))}
+            to="/admin?table=users"
           >
             Utilisateurs
           </NavLink>
           <NavLink
             role="menuitem"
             onClick={() => setMenuOpen(false)}
-            className={() => linkClass(isTableActive('skills'))}
-            to="/admin?table=skills"
+            className={() => linkClass(isTableActive('realms'))}
+            to="/admin?table=realms"
           >
-            Tables/CRUD
-          </NavLink>
-          <NavLink
-            role="menuitem"
-            onClick={() => setMenuOpen(false)}
-            className={() => linkClass(isTableActive('support_tickets'))}
-            to="/admin?table=support_tickets"
-          >
-            Tickets support
-          </NavLink>
-          <NavLink
-            role="menuitem"
-            onClick={() => setMenuOpen(false)}
-            className={() => linkClass(isTableActive('system_settings'))}
-            to="/admin?table=system_settings"
-          >
-            Paramètres système
+            Royaumes
           </NavLink>
           <button
             type="button"

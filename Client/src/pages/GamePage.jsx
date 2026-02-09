@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useGameData } from '../hooks/useGameData.js';
 import { useIdleTick } from '../hooks/useIdleTick.js';
-import { getGameSnapshot, upgradeFactory, upgradeSkill } from '../services/gameService.js';
 import { useRealms } from '../hooks/useRealms.js';
-import { unlockRealm } from '../services/gameService.js';
+import { getGameSnapshot, upgradeFactory, upgradeSkill, unlockRealm } from '../services/gameService.js';
 import { activateRealm } from '../services/realmService.js';
-import { useLocation } from 'react-router-dom';
 import { useRequireAuth } from '../hooks/useRequireAuth.js';
 
 import RealmPanel from '../components/Panel/RealmPanel.jsx';
@@ -13,34 +12,12 @@ import ResourcesPanel from '../components/Panel/ResourcesPanel.jsx';
 import FactoryPanel from '../components/Panel/FactoryPanel.jsx';
 import SkillPanel from '../components/Panel/SkillPanel.jsx';
 import ProgressPanel from '../components/Panel/ProgressPanel.jsx';
+import { formatCompact, formatDurationHoursMinutes } from '../utils/format.js';
+import { normalizeError } from '../utils/errors.js';
+import { normalizeKey } from '../utils/text.js';
+import { getActiveRealmId, getActiveRealmName } from '../utils/game.js';
 
 export default function GamePage() {
-  const normalizeError = (err) => {
-    const message = err?.message || '';
-    if (message === 'Not enough resources') return 'Ressources insuffisantes';
-    return message || 'Ressources insuffisantes';
-  };
-  const formatDuration = (totalSeconds) => {
-    const total = Math.max(0, Math.floor(Number(totalSeconds) || 0));
-    const hours = Math.floor(total / 3600);
-    const minutes = Math.floor((total % 3600) / 60);
-    if (hours > 0) {
-      return `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
-    }
-    return `${minutes}m`;
-  };
-  const formatNumber = (value) =>
-    new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(value || 0));
-  const formatCompact = (value) => {
-    const numeric = Number(value || 0);
-    const abs = Math.abs(numeric);
-    if (!Number.isFinite(numeric)) return '0';
-    if (abs >= 1e12) return `${formatNumber(numeric / 1e12)} Bn`;
-    if (abs >= 1e9) return `${formatNumber(numeric / 1e9)} Md`;
-    if (abs >= 1e6) return `${formatNumber(numeric / 1e6)} M`;
-    if (abs >= 1e3) return `${formatNumber(numeric / 1e3)} K`;
-    return formatNumber(numeric);
-  };
   const { data, loading, error, setData } = useGameData();
   const { data: realms, loading: realmsLoading, error: realmsError } = useRealms();
   const [actionError, setActionError] = useState('');
@@ -65,19 +42,8 @@ export default function GamePage() {
   }, [location.state]);
 
   useIdleTick(setData, setIdleSummary, dismissedIdleSignature);
-  const activeRealmId = data?.player?.realms?.find((r) => r.is_active === 1)?.realm_id ??
-    data?.player?.realms?.[0]?.realm_id ?? null;
-  const activeRealm = data?.realms?.find((r) => r.id === activeRealmId);
-  const activeRealmName = activeRealm ? activeRealm.name : 'Royaume';
-  const normalizeKey = (value = '') =>
-    value
-      .toLowerCase()
-      .replace(/[œ]/g, 'oe')
-      .replace(/[æ]/g, 'ae')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, ' ')
-      .trim();
+  const activeRealmId = getActiveRealmId(data);
+  const activeRealmName = getActiveRealmName(data) || 'Royaume';
   const normalizedRealmName = normalizeKey(activeRealmName);
   const heroHeaderByRealm = [
     { key: 'aquerus', file: 'HERO HEADER AQUERUS.png' },
@@ -107,7 +73,8 @@ export default function GamePage() {
       setData(snapshot);
     } catch (err) {
       const message = normalizeError(err);
-      if (message === 'Ressources insuffisantes') {
+      const code = err?.code;
+      if (code === 'RESOURCES_INSUFFICIENT' || message.startsWith('Ressources insuffisantes')) {
         setInlineError({ scope: 'factory', id: factoryId, message });
       } else {
         setActionError(message);
@@ -124,7 +91,8 @@ export default function GamePage() {
       setData(snapshot);
     } catch (err) {
       const message = normalizeError(err);
-      if (message === 'Ressources insuffisantes') {
+      const code = err?.code;
+      if (code === 'RESOURCES_INSUFFICIENT' || message.startsWith('Ressources insuffisantes')) {
         setInlineError({ scope: 'realm', id: realmId, message });
       } else {
         setActionError(message);
@@ -141,7 +109,8 @@ export default function GamePage() {
       setData(snapshot);
     } catch (err) {
       const message = normalizeError(err);
-      if (message === 'Ressources insuffisantes') {
+      const code = err?.code;
+      if (code === 'RESOURCES_INSUFFICIENT' || message.startsWith('Ressources insuffisantes')) {
         setInlineError({ scope: 'skill', id: skillId, message });
       } else {
         setActionError(message);
@@ -191,7 +160,7 @@ export default function GamePage() {
               </button>
             </div>
             <p className="mt-1">
-              Debloque un royaume, ameliore ses usines, achete des skills, puis remplis
+              Débloque un royaume, améliore ses usines, achète des skills, puis remplis
               les exigences endgame pour obtenir le badge final.
             </p>
           </div>
@@ -226,7 +195,7 @@ export default function GamePage() {
                 <span className="text-base" aria-hidden="true">
                   i
                 </span>
-                <span>Hors ligne: +{formatDuration(idleSummary.seconds)}</span>
+                <span>Hors ligne: +{formatDurationHoursMinutes(idleSummary.seconds)}</span>
               </div>
               <button
                 className="rounded-[var(--radius-sm)] border border-[var(--color-border)] px-2 py-1 text-xs text-[var(--color-text)]/80 hover:border-[var(--color-gold)]/60 hover:text-[var(--color-text)]"
@@ -237,7 +206,7 @@ export default function GamePage() {
                   }
                   setIdleSummary(null);
                 }}
-                aria-label="Fermer le resume hors ligne"
+                aria-label="Fermer le résumé hors ligne"
               >
                 Fermer
               </button>
