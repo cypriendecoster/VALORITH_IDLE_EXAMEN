@@ -15,14 +15,14 @@ import ProgressPanel from '../components/Panel/ProgressPanel.jsx';
 import { formatCompact, formatDurationHoursMinutes } from '../utils/format.js';
 import { normalizeError } from '../utils/errors.js';
 import { normalizeKey } from '../utils/text.js';
-import { getActiveRealmId, getActiveRealmName } from '../utils/game.js';
+import { getActiveRealmName } from '../utils/game.js';
 
 export default function GamePage() {
   const { data, loading, error, setData } = useGameData();
   const { data: realms, loading: realmsLoading, error: realmsError } = useRealms();
-  const [actionError, setActionError] = useState('');
+  const [, setActionError] = useState('');
   const [inlineError, setInlineError] = useState(null);
-  const [notice, setNotice] = useState('');
+  const [dismissedNoticeKey, setDismissedNoticeKey] = useState('');
   const [idleSummary, setIdleSummary] = useState(null);
   const [showOnboarding, setShowOnboarding] = useState(
     () => localStorage.getItem('hideOnboarding') !== '1'
@@ -34,15 +34,16 @@ export default function GamePage() {
 
   useRequireAuth();
 
+  const routeNotice = typeof location.state?.notice === 'string' ? location.state.notice : '';
+  const notice = routeNotice && dismissedNoticeKey !== location.key ? routeNotice : '';
+
   useEffect(() => {
     if (location.state?.notice) {
-      setNotice(location.state.notice);
       window.history.replaceState({}, '');
     }
   }, [location.state]);
 
   useIdleTick(setData, setIdleSummary, dismissedIdleSignature);
-  const activeRealmId = getActiveRealmId(data);
   const activeRealmName = getActiveRealmName(data) || 'Royaume';
   const normalizedRealmName = normalizeKey(activeRealmName);
   const heroHeaderByRealm = [
@@ -178,7 +179,7 @@ export default function GamePage() {
             </div>
             <button
               className="rounded-[var(--radius-sm)] border border-[var(--color-border)] px-2 py-1 text-xs text-[var(--color-muted)]"
-              onClick={() => setNotice('')}
+              onClick={() => setDismissedNoticeKey(location.key)}
               aria-label="Fermer la notification"
             >
               Fermer

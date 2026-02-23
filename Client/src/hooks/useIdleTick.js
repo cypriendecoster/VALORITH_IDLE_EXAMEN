@@ -60,7 +60,7 @@ export function useIdleTick(setGameData, setIdleSummary, dismissedIdleSignature)
             }
           };
         });
-      } catch (error) {
+      } catch {
         // optional: ignore tick errors silently
       }
     }

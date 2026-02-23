@@ -17,7 +17,7 @@ export function useRequireAuth({ role = null, redirectTo = '/login', unauthorize
         if (role && me?.role !== role) {
           navigate(unauthorizedTo, { replace: true });
         }
-      } catch (err) {
+      } catch {
         localStorage.removeItem('token');
         sessionStorage.removeItem('token');
         navigate(redirectTo, { replace: true });

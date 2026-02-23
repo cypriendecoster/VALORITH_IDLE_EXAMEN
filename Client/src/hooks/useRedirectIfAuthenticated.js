@@ -14,7 +14,7 @@ export function useRedirectIfAuthenticated(redirectTo = '/game') {
         if (isMounted) {
           navigate(redirectTo, { replace: true });
         }
-      } catch (err) {
+      } catch {
         // Not authenticated or request failed; stay on the page.
       }
     }

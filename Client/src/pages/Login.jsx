@@ -22,7 +22,7 @@ export default function Login() {
       try {
         await getMe();
         navigate('/game', { replace: true });
-      } catch (err) {
+      } catch {
         localStorage.removeItem('token');
         sessionStorage.removeItem('token');
       }

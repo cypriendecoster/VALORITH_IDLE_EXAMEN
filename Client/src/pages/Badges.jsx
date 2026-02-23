@@ -2,11 +2,13 @@ import { useMemo, useState } from 'react';
 import { useGameData } from '../hooks/useGameData.js';
 import { useRequireAuth } from '../hooks/useRequireAuth.js';
 
+const EMPTY_ARRAY = [];
+
 export default function Badges() {
   useRequireAuth();
   const { data, loading, error } = useGameData();
-  const badges = data?.badges || [];
-  const userBadges = data?.userBadges || [];
+  const badges = data?.badges ?? EMPTY_ARRAY;
+  const userBadges = data?.userBadges ?? EMPTY_ARRAY;
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortKey, setSortKey] = useState('name');
 
