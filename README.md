@@ -39,7 +39,7 @@ Frontend en React + Vite, backend en Node.js/Express avec base MySQL.
 cd Server
 npm install
 
-### 2) Server
+### 2) FrontEnd
 cd Client
 npm install
 
