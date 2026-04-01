@@ -4,6 +4,7 @@ import { getPlayerRealms, insertPlayerRealm, setActiveRealm } from '../models/pl
 import { getPlayerFactory, insertPlayerFactory } from '../models/playerFactoryModel.js';
 import { getPlayerResource, insertPlayerResource } from '../models/playerResourceModel.js';
 import { upsertPlayerState } from '../models/playerStateModel.js';
+import { upsertPlayerStatsBaseline } from '../models/playerStatsModel.js';
 import { createError } from '../utils/errors.js';
 
 export async function bootstrapNewPlayer(userId) {
@@ -56,6 +57,10 @@ export async function bootstrapNewPlayer(userId) {
   }
 
   await upsertPlayerState(userId, new Date());
+  await upsertPlayerStatsBaseline(userId, {
+    maxRealmUnlockedId: defaultRealm.id,
+    maxFactoryLevelReached: 1
+  });
 
   return {
     realmId: defaultRealm.id,

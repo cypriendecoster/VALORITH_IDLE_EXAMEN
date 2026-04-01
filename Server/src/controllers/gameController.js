@@ -1,11 +1,10 @@
-import { getGameSnapshot } from '../services/gameSnapshotService.js';
+ï»¿import { getGameSnapshot } from '../services/gameSnapshotService.js';
 import { idleTick } from '../services/idleService.js';
 import { upgradeFactory } from '../services/factoryService.js';
 import { upgradeSkill } from '../services/skillService.js';
 import { unlockRealm } from '../services/realmService.js';
 import { toResponseError } from '../utils/errors.js';
 
-// Récupère l’état complet du jeu pour le joueur connecté
 export async function getGameSnapshotController(req, res) {
   try {
     const data = await getGameSnapshot(req.user.id);
@@ -37,13 +36,13 @@ export async function idleTickController(req, res) {
   }
 }
 
-// Améliore une usine du joueur
+// AmÃ©liore une usine du joueur
 export async function upgradeFactoryController(req, res) {
   try {
     const { factoryId } = req.params;
     if (!factoryId) {
       return res.status(400).json({
-        message: 'Identifiant d’usine manquant.',
+        message: 'Identifiant d usine manquant.',
         code: 'FACTORY_ID_MISSING'
       });
     }
@@ -54,20 +53,20 @@ export async function upgradeFactoryController(req, res) {
     console.error(error);
     const { status, message, code } = toResponseError(
       error,
-      'Impossible d’améliorer l’usine.',
+      'Impossible d amÃ©liorer l usine.',
       'FACTORY_UPGRADE_FAILED'
     );
     return res.status(status).json({ message, code });
   }
 }
 
-// Améliore une compétence du joueur
+// AmÃ©liore une compÃ©tence du joueur
 export async function upgradeSkillController(req, res) {
   try {
     const { skillId } = req.params;
     if (!skillId) {
       return res.status(400).json({
-        message: 'Identifiant de compétence manquant.',
+        message: 'Identifiant de compï¿½tence manquant.',
         code: 'SKILL_ID_MISSING'
       });
     }
@@ -78,14 +77,14 @@ export async function upgradeSkillController(req, res) {
     console.error(error);
     const { status, message, code } = toResponseError(
       error,
-      'Impossible d’améliorer la compétence.',
+      'Impossible d amÃ©liorer la compÃ©tence.',
       'SKILL_UPGRADE_FAILED'
     );
     return res.status(status).json({ message, code });
   }
 }
 
-// Débloque un nouveau royaume pour le joueur
+// DÃ©bloque un nouveau royaume pour le joueur
 export async function unlockRealmController(req, res) {
   try {
     const { realmId } = req.params;
@@ -102,7 +101,7 @@ export async function unlockRealmController(req, res) {
     console.error(error);
     const { status, message, code } = toResponseError(
       error,
-      'Impossible de débloquer le royaume.',
+      'Impossible de dÃ©bloquer le royaume.',
       'REALM_UNLOCK_FAILED'
     );
     return res.status(status).json({ message, code });

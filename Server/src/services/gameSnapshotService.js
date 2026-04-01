@@ -14,6 +14,38 @@ import { getPlayerState } from '../models/playerStateModel.js';
 import { getPlayerStats } from '../models/playerStatsModel.js';
 import { buildSkillLevelMap, getFactorySkillModifiers } from './skillEffectsService.js';
 
+function toNonNegativeInt(value) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return 0;
+  return Math.max(0, Math.floor(num));
+}
+
+function normalizePlayerStats(userId, playerStats, playerRealms, playerFactories) {
+  const maxRealmFromProgress = playerRealms.reduce((max, realm) => {
+    return Math.max(max, toNonNegativeInt(realm?.realm_id));
+  }, 0);
+
+  const maxFactoryFromProgress = playerFactories.reduce((max, factory) => {
+    return Math.max(max, toNonNegativeInt(factory?.level));
+  }, 0);
+
+  return {
+    user_id: userId,
+    total_play_time_seconds: toNonNegativeInt(playerStats?.total_play_time_seconds),
+    total_logins: toNonNegativeInt(playerStats?.total_logins),
+    max_realm_unlocked_id: Math.max(
+      toNonNegativeInt(playerStats?.max_realm_unlocked_id),
+      maxRealmFromProgress
+    ),
+    max_factory_level_reached: Math.max(
+      toNonNegativeInt(playerStats?.max_factory_level_reached),
+      maxFactoryFromProgress
+    ),
+    created_at: playerStats?.created_at || null,
+    updated_at: playerStats?.updated_at || null
+  };
+}
+
 export async function getGameSnapshot(userId) {
   // Charge toutes les donnees utiles en une fois
   const [
@@ -93,6 +125,8 @@ export async function getGameSnapshot(userId) {
     });
   }
 
+  const normalizedStats = normalizePlayerStats(userId, playerStats, playerRealms, playerFactories);
+
   return {
     realms,
     realmUnlockCosts,
@@ -108,7 +142,7 @@ export async function getGameSnapshot(userId) {
       skills: playerSkills,
       realms: playerRealms,
       state: playerState,
-      stats: playerStats
+      stats: normalizedStats
     }
   };
 }

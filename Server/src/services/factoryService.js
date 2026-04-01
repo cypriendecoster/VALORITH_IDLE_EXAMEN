@@ -8,6 +8,7 @@ import {
   updatePlayerFactoryLevel
 } from '../models/playerFactoryModel.js';
 import { getPlayerRealm } from '../models/playerRealmModel.js';
+import { setMaxFactoryLevelReached } from '../models/playerStatsModel.js';
 import { buildSkillLevelMap, getFactorySkillModifiers } from './skillEffectsService.js';
 import { createError } from '../utils/errors.js';
 
@@ -77,6 +78,11 @@ export async function upgradeFactory(userId, factoryId) {
     amountCarry: newCarry,
     addLifetime: 0
   });
+  try {
+    await setMaxFactoryLevelReached(userId, currentLevel + 1);
+  } catch (statsError) {
+    console.error('Stats update failed on factory upgrade:', statsError);
+  }
 
   return {
     factoryId: factory.id,

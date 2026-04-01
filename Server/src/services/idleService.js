@@ -7,6 +7,7 @@ import {
 import { getPlayerFactoriesForIdle } from '../models/playerFactoryModel.js';
 import { getPlayerSkills } from '../models/playerSkillModel.js';
 import { getPlayerState, upsertPlayerState } from '../models/playerStateModel.js';
+import { addPlayerPlayTime } from '../models/playerStatsModel.js';
 import { buildSkillLevelMap, getFactorySkillModifiers } from './skillEffectsService.js';
 
 export async function idleTick(userId) {
@@ -92,6 +93,11 @@ export async function idleTick(userId) {
   }
 
   await upsertPlayerState(userId, now);
+  try {
+    await addPlayerPlayTime(userId, deltaSeconds);
+  } catch (statsError) {
+    console.error('Stats update failed on idle tick:', statsError);
+  }
 
   return {
     deltaSeconds,

@@ -3,6 +3,7 @@ import { getFactoriesByRealm } from '../models/factoryModel.js';
 import { getPlayerFactory, insertPlayerFactory, updatePlayerFactoryLevel } from '../models/playerFactoryModel.js';
 import { getPlayerResource, insertPlayerResource, updatePlayerResource } from '../models/playerResourceModel.js';
 import { getPlayerRealm, insertPlayerRealm, setActiveRealm } from '../models/playerRealmModel.js';
+import { setMaxRealmUnlocked } from '../models/playerStatsModel.js';
 import { createError } from '../utils/errors.js';
 
 export async function unlockRealm(userId, realmId) {
@@ -56,6 +57,11 @@ export async function unlockRealm(userId, realmId) {
 
   await insertPlayerRealm(userId, realmId);
   await setActiveRealm(userId, realmId);
+  try {
+    await setMaxRealmUnlocked(userId, realmId);
+  } catch (statsError) {
+    console.error('Stats update failed on realm unlock:', statsError);
+  }
 
   // Donne une usine de depart si besoin
   const factories = await getFactoriesByRealm(realmId);

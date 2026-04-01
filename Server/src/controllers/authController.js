@@ -14,6 +14,7 @@ import {
   getPasswordResetToken,
   markPasswordResetTokenUsed
 } from '../models/passwordResetTokenModel.js';
+import { incrementPlayerLogins } from '../models/playerStatsModel.js';
 import { toResponseError } from '../utils/errors.js';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -90,6 +91,11 @@ export async function registerController(req, res) {
     });
 
     await bootstrapNewPlayer(userId);
+    try {
+      await incrementPlayerLogins(userId, 1);
+    } catch (statsError) {
+      console.error('Stats update failed on register:', statsError);
+    }
 
     const token = jwt.sign(
       { id: userId, role: 'PLAYER' },
@@ -138,6 +144,11 @@ export async function loginController(req, res) {
     }
 
     await updateLastLogin(user.id);
+    try {
+      await incrementPlayerLogins(user.id, 1);
+    } catch (statsError) {
+      console.error('Stats update failed on login:', statsError);
+    }
 
     const token = jwt.sign(
       { id: user.id, role: user.role },
